@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const { connectToMongoDB } = require('./db/connection');
+const roleRoutes = require('./routes/roles');
+const recipeRoutes = require('./routes/recipe');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -8,6 +10,7 @@ const PORT = process.env.PORT || 8080;
 // Set EJS as templating engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -26,8 +29,8 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-const roleRoutes = require('./routes/roles');
 app.use('/', roleRoutes);
+app.use('/', recipeRoutes);
 
 // Connect to MongoDB and start server
 async function startServer() {

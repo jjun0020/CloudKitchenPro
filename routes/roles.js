@@ -78,8 +78,8 @@ router.post('/rolesAdd', async function(req,res){
 });
 
 // Task 3: User Login and Authentication System
-router.get('/login-34890645', function(req,res){
-    res.render('login')
+router.get('/api/login-34890645', function(req,res){
+    res.render('login', {error: ''})
 })
 
 router.post('/loginUser', async function(req,res){
@@ -88,11 +88,12 @@ router.post('/loginUser', async function(req,res){
         const user = await Role.findOne({email});
 
         if(!user){
-            return res.status(400).send("Account not founc")
+            return res.status(400).render("login", { error: "Account not found" }); //send the 400 to the back-end and error to the front-end
         }
 
         if(user.password != password){
-            return res.status(400).send('Invalid password')
+            return res.status(400).render("login", { error: "Invalid password" }); //send the 400 to the back-end and error to the front-end
+            
         }
 
         if(user.role === 'Admin'){
@@ -102,7 +103,7 @@ router.post('/loginUser', async function(req,res){
         } else if (user.role === 'Manager'){
             return res.redirect(`/api/manager-page-34890645?email=${encodeURIComponent(user.email, user.fullName)}&fullName=${encodeURIComponent(user.fullName)}`)
         } else {
-            return res.redirect('/login');
+            return res.redirect('/login-34890645');
         }
 
 
@@ -111,13 +112,5 @@ router.post('/loginUser', async function(req,res){
         res.status(500).send('Sever Error');
     }
 });
-
-//Logout
-router.get("/logout", function(req,res){
-    req.session.destroy( function(error){  //deletes the session date from the sever
-        if(error) return res.status(500).send("Unable to log out");
-        res.redirect("/login-34890645")
-    })
-})
 
 module.exports = router;

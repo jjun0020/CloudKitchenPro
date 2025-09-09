@@ -4,24 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/all.css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <%- include('partials/header', { title: 'Add Recipe' }) %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand"
+                href="">
+                Chef CloudKitchen Pro
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="">All Recipe</a>
+                <a class="nav-link" href="/api/add-recipes-34890645">Add Recipe</a>
+                <a href="/api/login-34890645" class="btn" style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
+            </div>
+        </div>
+    </nav>
 
-        <h2>🍳 Add To Cook Book </h2>
-
-        <form method="POST" action="/addRecipe">
+    <h2 class = "text-center">🍳 Add To CookBook </h2>
+    <div class="d-flex justify-content-center align-items-center min-vh-100" >
+        
+        <form method="POST" action="/addRecipe" class="w-100" style="max-width: 1500px; padding-left: 70vh;">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="email" class="form-label">Title:</label>
-                        <input type="email" class="form-control" name="title" required>
+                        <label for="text" class="form-label">Title:</label>
+                        <input type="text" class="form-control" name="title" required>
                     </div>
                 </div>
             </div>
-
+            
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -30,7 +43,25 @@
                     </div>
                 </div>
             </div>
-
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">Ingredients:</label>
+                        <textarea type="text" class="form-control" name="ingredients[]" rows="4" required></textarea>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">Instructions:</label>
+                        <textarea type="text" class="form-control" name="Instructions" rows="4" required> </textarea>
+                    </div>
+                </div>
+            </div>
+        
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -45,21 +76,37 @@
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="firstName" class="form-label">Prep Time:</label>
-                        <input type="number" class="form-control" name="prepTime" min = "1" max = "480" required>
-                    </div>
-                </div>
-            </div>
-
+        
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Cuisine Type:</label>
                         <select class="form-control" name="cuisineType" required>
+                            <option value="">Select a role</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Asian">Asian</option>
+                            <option value="Mexican">Mexican</option>
+                        </select>
+        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">Prep Time:</label>
+                        <input type="number" class="form-control" name="prepTime" min="1" max="480" required>
+                    </div>
+                </div>
+            </div>
+        
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Difficulty:</label>
+                        <select class="form-control" name="difficulty" required>
                             <option value="">Select a role</option>
                             <option value="Easy">Easy</option>
                             <option value="Medium">Medium</option>
@@ -68,21 +115,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Difficulty:</label>
-                        <select class="form-control" name="difficulty required>
-                            <option value="">Select a role</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Asian">Asian</option>
-                            <option value="Mexican">Mexican</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
+        
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -91,12 +124,15 @@
                     </div>
                 </div>
             </div>
-
+        
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <a href="" class="btn btn-secondary">Cancel</a>
             </div>
+        
         </form>
+    </div>
+        
 
         <%- include('partials/footer') %>
 </body>
