@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Chef
+    </title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/api/chef-page-34890645?email=<%=encodeURIComponent(email)%>&&fullName=<%=encodeURIComponent(fullName)%>">
+                Chef CloudKitchen Pro
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="">All Recipe</a>
+                <a class="nav-link" href="">Add Recipe</a>
+                <a href="/logout" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container text-center my-5 bg-info text-white p-5 rounded">
+        <h1 class="display-4">🍳CloudKitchen Pro🍰</h1>
+        <p class="lead">Enterprise Kitchen Management & Recipe Intelligence Platform</p>
+        <p class="lead fw-bold">Welcome <%= fullName %>!</p>
+        <p class="lead fw-bold"> <%= email %>!</p>
+    </div>
+
+    
+    <div class="container mt-4">
