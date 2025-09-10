@@ -11,17 +11,28 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
         <div class="container">
             <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=encodeURIComponent(email) %>">
                 Manager CloudKitchen Pro
             </a>
             <div class="navbar-nav">
                 <a class="nav-link" href="">All Inventory</a>
-                <a class="nav-link" href="">Add Inventory</a>
+                <a class="nav-link" href="/api/add-inventories-34890645">Add Inventory</a>
                 <a class="nav-link" href="">Smart Alert</a>
-                <a href="/logout" class="btn btn-danger">Logout</a>
+                <a href="/api/login-34890645" class="btn btn-danger">Logout</a>
             </div>
         </div>
     </nav>
+
+    <div class="container text-center my-5 bg-success text-white p-5 rounded">
+        <h1 class="display-4">🍳CloudKitchen Pro🍰</h1>
+        <p class="lead">Enterprise Kitchen Management & Recipe Intelligence Platform</p>
+        <p class="lead fw-bold">Welcome Manager <%= fullName %>!</p>
+        <p class="lead fw-bold">
+            <%= email %>!
+        </p>
+    </div>
+
+    
     <div class="container mt-4">

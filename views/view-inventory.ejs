@@ -1,8 +1,8 @@
-<%- include('partials/header', { title: 'All Inventory' , headTitle: 'Chef CloudKitchen Pro ' }) %>
+<%- include('partials/header', { title: 'All Inventory', headTitle: 'Chef CloudKitchen Pro ' }) %>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>All Inventory</h2>
-        <a href="/api/add-recipes-34890645" class="btn btn-success">+ Add New Recipe</a>
+        <a href="/api/add-inventories-34890645" class="btn btn-success">+ Add New Inventory</a>
     </div>
 
     <% if (inventories.length===0) { %>
@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% inventories.forEach(inventory=> { %>
+                        <% inventories.forEach(inventory => { %>
                             <tr>
                                 <td>
                                     <%= inventory.inventoryId %>
@@ -46,9 +46,7 @@
                                     <%= inventory.category %>
                                 </td>
                                 <td>
-                                    <%= inventory.purchaseDate.toISOString().split('T')[0] %>
-                                        <%# reference:
-                                            https://stackoverflow.com/questions/47066555/remove-time-after-converting-date-toisostring%>
+                                    <%= inventory.purchaseDate.toISOString().split('T')[0] %>  <%# reference: https://stackoverflow.com/questions/47066555/remove-time-after-converting-date-toisostring%>
                                 </td>
                                 <td>
                                     <%= inventory.expirationDate.toISOString().split('T')[0] %>
@@ -64,7 +62,8 @@
                                 </td>
                                 <td>
                                     <a href="/<%= inventory._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
-                                    <form method="POST" action="/<%= inventory._id %>/delete" style="display: inline;">
+                                    <form method="POST" action="/<%= inventory._id %>/delete"
+                                        style="display: inline;">
                                         <button type="submit" class="btn btn-sm btn-danger"
                                             onclick="return confirm('Are you sure?')">Delete</button>
                                     </form>
@@ -76,4 +75,4 @@
             </div>
             <% } %>
 
-                <%- include('partials/footer') %>
+<%- include('partials/footer') %>

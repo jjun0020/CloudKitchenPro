@@ -1,5 +1,7 @@
 const express = require('express');
 const Role = require('../models/Role');
+const Recipe = require('../models/Recipe');
+const Inventory = require('../models/Inventory');
 const router = express.Router();
 
 //This is to show the registration form add-role.ejs
@@ -113,4 +115,237 @@ router.post('/loginUser', async function(req,res){
     }
 });
 
+
+
+///////////////////////////////
+//         RECIPE           //
+//////////////////////////////
+
+router.get('/', async function (req, res) {
+    try {
+        const recipes = await Recipe.find({});
+        res.render('view-recipes', { recipes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+//GET to the recipe page
+router.get("/api/add-recipes-34890645", function (req, res) {
+    res.render('add-recipes');
+});
+
+router.post("/addRecipe", async function (req, res) {
+    try {
+        let aRole = await Role.findOne({ userId: req.body.userId});
+        console.log(aRole)
+        if (!aRole) {
+            return res.status(400).send("Invalid user/role ID"); // stop here if not found
+        }
+        const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        const ingredientInput = req.body.ingredients.join("\n"); // join all textarea lines
+        const nameIngredients = splitWord(ingredientInput);
+        const newRecipe = new Recipe({
+            recipeId,
+            userId: aRole.userId,
+            title,
+            chef,
+            ingredients: nameIngredients,
+            instructions,
+            mealType,
+            cuisineType,
+            prepTime,
+            difficulty,
+            servings,
+            createdDate
+        });
+
+        await newRecipe.save();
+        console.log(newRecipe);
+        
+        res.redirect('/view-recipes') //after signing up, go to login page
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error creating recipe");
+    }
+});
+
+
+
+
+///////////////////////////////
+//         INVENTORY         //
+//////////////////////////////
+
+router.get('/api/view-inventory-34890645', async function (req, res) {
+    try {
+        const inventories = await Inventory.find({});
+        res.render('view-inventory', { inventories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+// GET add inventory form
+router.get("/api/add-inventories-34890645", function (req, res) {
+    res.render('add-inventory');
+});
+
+// POST create new inventory
+router.post("/addInventory", async function(req,res){
+    try {
+        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, createdDate } = req.body;
+
+        // Create new student instance
+        const newInventory = new Inventory({
+            inventoryId,
+            ingredientName,
+            quantity: parseFloat(quantity),
+            unit,
+            category,
+            purchaseDate,
+            expirationDate,
+            location,
+            cost: parseFloat(cost),
+            createdDate
+        });
+
+        await newInventory.save();
+        res.redirect('/api/view-inventory-34890645');
+    } catch (error) {
+        console.error(error);
+
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).send(`Validation Error: ${errors.join(', ')}`);
+        }
+
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).send(`${field.charAt(0).toUpperCase() + field.slice(1)} already exists`);
+        }
+
+        res.status(500).send('Server Error');
+    }
+})
+
+// GET edit inventory form
+router.get('/:id/edit', async (req, res) => {
+    try {
+        const inventory = await Inventory.findById(req.params.id);
+
+        if (!inventory) {
+            return res.status(404).send('Inventory not found');
+        }
+        res.render('edit-inventory', { inventory });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+// POST update inventory
+router.post("/:id/update", async function (req, res) {
+    try {
+        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, createdDate } = req.body;
+
+        // Create new student instance
+        const updateInventory = Inventory.findByIdAndUpdate(
+            req.params.id,
+            {
+            inventoryId,
+            ingredientName,
+            quantity: parseFloat(quantity),
+            unit,
+            category,
+            purchaseDate,
+            expirationDate,
+            location,
+            cost: parseFloat(cost),
+            createdDate
+        },
+        {
+            new: true,              // Return the updated document
+            runValidators: true     // Run schema validation
+        }
+    );  
+        if (!updateInventory) {
+            return res.status(404).send('Inventory not found');
+        }
+
+        res.redirect('/api/view-inventory-34890645');
+    } catch (error) {
+        console.error(error);
+
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).send(`Validation Error: ${errors.join(', ')}`);
+        }
+
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            return res.status(400).send(`${field.charAt(0).toUpperCase() + field.slice(1)} already exists`);
+        }
+
+        res.status(500).send('Server Error');
+    }
+})
+
+// POST delete inventory
+router.post('/:id/delete', async (req, res) => {
+    try {
+        const deletedInventory = await Inventory.findByIdAndDelete(req.params.id);
+
+        if (!deletedInventory) {
+            return res.status(404).send('Inventory not found');
+        }
+
+        res.redirect('/api/view-inventory-34890645');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
+
+function splitWord(input) {
+    //split by space or comma, remove extra space , remove empty string
+    const sentences = input.split(/\n|,/).map(sentence => sentence.trim()).filter(sentence => sentence)
+    let ingredientNameParts = []; //this is to store the each object
+    const units = ["g", "kg", "ml", "l"]; // unit
+
+    for (let line of sentences) {
+        const parts = line.split(" "); //turn a string into an array
+        let quantity = 0;
+        let unit = "";
+        let nameParts = [];
+
+        for(let part of parts){
+            if (!isNaN(part)){ // is a number
+                quantity = parseInt(part);
+            } else if(units.includes(part.toLowerCase())){ //if the words match one of the unit
+                unit = part;
+            } else {
+                nameParts.push(part); //if it not a number or unit
+            }
+        }
+
+        ingredientNameParts.push({
+            ingredientName: nameParts.join(" "),
+            quantity: quantity,
+            unit: unit
+        });
+    }
+
+    return ingredientNameParts;
+}
+
+

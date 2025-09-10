@@ -5,14 +5,13 @@ const recipeSchema = new mongoose.Schema({
         type: String,
         default: generateUserId,
         unique: true,
-        required: true
+        required: true,
+        match: [/^R-\d{5}$/, 'Recipe Id must be R-XXXXX']
     },
-    userId: [ //reference from the 
-            {
+    userId: [{ 
                 type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
                 ref: "Role" 
-            }
-        ],
+    }],
     title: {
         type: String,
         required: true,
@@ -46,7 +45,7 @@ const recipeSchema = new mongoose.Schema({
             message: "Instructions must have at least 3 characters"
         }]
     }],
-    Instructions: [{
+    instructions: [{
         type: [String], //array of string
         required: true,
         validate: [{

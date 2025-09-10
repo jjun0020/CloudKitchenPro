@@ -6,7 +6,7 @@ const roleSchema = new mongoose.Schema({
         type: String,
         default: generateUserId,
         unique: true,
-        required: true
+        required: true,
     },
     email: {
         type: String,

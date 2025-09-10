@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const { connectToMongoDB } = require('./db/connection');
 const roleRoutes = require('./routes/roles');
-const recipeRoutes = require('./routes/recipe');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -30,7 +29,6 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/', roleRoutes);
-app.use('/', recipeRoutes);
 
 // Connect to MongoDB and start server
 async function startServer() {

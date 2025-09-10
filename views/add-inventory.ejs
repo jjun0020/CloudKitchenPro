@@ -11,11 +11,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="">
-                Chef CloudKitchen Pro
+                Manager CloudKitchen Pro
             </a>
             <div class="navbar-nav">
-                <a class="nav-link" href="">All Recipe</a>
-                <a class="nav-link" href="/api/add-recipes-34890645">Add Inventory</a>
+                <a class="nav-link" href="">All Inventory</a>
+                <a class="nav-link" href="/api/add-inventories-34890645">Add Inventory</a>
                 <a href="/api/login-34890645" class="btn"
                     style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
             </div>
@@ -25,12 +25,12 @@
     <h2 class="text-center">🍳 Add Ingredients </h2>
     <div class="d-flex justify-content-center align-items-center min-vh-100">
 
-        <form method="POST" action="/addRecipe" class="w-100" style="max-width: 1500px; padding-left: 70vh;">
+        <form method="POST" action="/addInventory" class="w-100" style="max-width: 1500px; padding-left: 70vh;">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="text" class="form-label">Title:</label>
-                        <input type="text" class="form-control" name="title" required>
+                        <label for="text" class="form-label">Ingredient Name:</label>
+                        <input type="text" class="form-control" name="ingredientName" minlength="2" maxlength="50" required>
                     </div>
                 </div>
             </div>
@@ -38,8 +38,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Chef Name:</label>
-                        <input type="text" class="form-control" name="chef" required>
+                        <label for="firstName" class="form-label">Quantity:</label>
+                        <input type="number" class="form-control" name="quantity" step="0.001" max="9999" required>
                     </div>
                 </div>
             </div>
@@ -47,8 +47,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Ingredients:</label>
-                        <textarea type="text" class="form-control" name="ingredients[]" rows="4" required></textarea>
+                        <label for="firstName" class="form-label">Cost:</label>
+                        <input type="number" class="form-control" name="cost" step="0.01" max="999.99" required>
                     </div>
                 </div>
             </div>
@@ -56,22 +56,18 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Instructions:</label>
-                        <textarea type="text" class="form-control" name="Instructions" rows="4" required> </textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Meal Type:</label>
-                        <select class="form-control" name="mealType" required>
-                            <option value="">Select a role</option>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Snack">Snack</option>
+                        <label class="form-label">Unit:</label>
+                        <select class="form-control" name="unit" required>
+                            <option value="">Select a unit</option>
+                            <option value="pieces">pieces</option>
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="liters">liters</option>
+                            <option value="ml">ml</option>
+                            <option value="cups">cups</option>
+                            <option value="tbsp">tbsp</option>
+                            <option value="tsp">tsp</option>
+                            <option value="dozen">dozen</option>
                         </select>
                     </div>
                 </div>
@@ -80,37 +76,19 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label">Cuisine Type:</label>
-                        <select class="form-control" name="cuisineType" required>
-                            <option value="">Select a role</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Asian">Asian</option>
-                            <option value="Mexican">Mexican</option>
-                        </select>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="firstName" class="form-label">Prep Time:</label>
-                        <input type="number" class="form-control" name="prepTime" min="1" max="480" required>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Difficulty:</label>
-                        <select class="form-control" name="difficulty" required>
-                            <option value="">Select a role</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
+                        <label class="form-label">Category:</label>
+                        <select class="form-control" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="Vegetables">Vegetables</option>
+                            <option value="Fruits">Fruits</option>
+                            <option value="Meat">Meat</option>
+                            <option value="Dairy">Dairy</option>
+                            <option value="Grains">Grains</option>
+                            <option value="Spices">Spices</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Frozen">Frozen</option>
+                            <option value="Canned">Canned</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
@@ -119,8 +97,33 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Servings:</label>
-                        <input type="number" class="form-control" name="servings" min="1" max="20" required>
+                        <label class="form-label">Location:</label>
+                        <select class="form-control" name="location" required>
+                            <option value="">Select a location</option>
+                            <option value="Fridge">Fridge</option>
+                            <option value="Freezer">Freezer</option>
+                            <option value="Pantry">Pantry</option>
+                            <option value="Counter">Counter</option>
+                            <option value="Cupboard">Cupboard</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">Purchase Date:</label>
+                        <input type="date" class="form-control" name="purchaseDate" max="{{today}}" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">Expiration Date:</label>
+                        <input type="date" class="form-control" name="expirationDate" required>
                     </div>
                 </div>
             </div>
