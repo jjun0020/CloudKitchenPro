@@ -9,8 +9,8 @@ const recipeSchema = new mongoose.Schema({
         match: [/^R-\d{5}$/, 'Recipe Id must be R-XXXXX']
     },
     userId: [{ 
-                type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
-                ref: "Role" 
+            type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
+            ref: "Role" 
     }],
     title: {
         type: String,

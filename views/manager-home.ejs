@@ -13,13 +13,12 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
         <div class="container">
-            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=encodeURIComponent(email) %>">
+            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=encodeURIComponent(email)%>&&fullName=<%=encodeURIComponent(fullName)%>">
                 Manager CloudKitchen Pro
             </a>
             <div class="navbar-nav">
-                <a class="nav-link" href="">All Inventory</a>
-                <a class="nav-link" href="/api/add-inventories-34890645">Add Inventory</a>
-                <a class="nav-link" href="">Smart Alert</a>
+                <a class="nav-link" href="/api/view-inventory-34890645?userId=<%= userId %>">View Inventory</a>
+                <a class="nav-link" href="/api/add-inventories-34890645?userId=<%= userId %>">Add Inventory</a>
                 <a href="/api/login-34890645" class="btn btn-danger">Logout</a>
             </div>
         </div>
@@ -34,5 +33,8 @@
         </p>
     </div>
 
+    <div>
+        <input type="text" name="userId" value="<%= userId %>" hidden/>
+    </div>
     
     <div class="container mt-4">

@@ -1,13 +1,37 @@
-<%- include('partials/header', { title: 'All Inventory', headTitle: 'Chef CloudKitchen Pro ' }) %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        View Inventory
+    </title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
+        <div class="container">
+            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=encodeURIComponent(email)%>&&fullName=<%=encodeURIComponent(fullName)%>">
+                Manager CloudKitchen Pro
+            </a>
+        </div>
+    </nav>
+    <div class="container mt-4">
+
+<!-- ============================================ -->
+<!--              Display Inventory               -->
+<!-- ============================================ -->
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>All Inventory</h2>
-        <a href="/api/add-inventories-34890645" class="btn btn-success">+ Add New Inventory</a>
+        <a href="/api/add-inventories-34890645?userId=<%= userId %>" class="btn btn-success">+ Add New Inventory</a>
     </div>
 
     <% if (inventories.length===0) { %>
         <div class="alert alert-info">
-            No Ingredient found. <a href="/api/add-inventories-34890645">Add the first ingredient</a>
+            No Ingredient found. <a href="/api/add-inventories-34890645?userId=<%= userId %>">Add the first ingredient</a>
         </div>
         <% } else { %>
             <div class="table-responsive">
@@ -17,6 +41,7 @@
                             <th>Ingredient ID</th>
                             <th>Ingredient Name</th>
                             <th>Quantity</th>
+                            <th>Stock</th>
                             <th>Unit</th>
                             <th>Category</th>
                             <th>Purchase Date</th>
@@ -40,6 +65,9 @@
                                     <%= inventory.quantity %>
                                 </td>
                                 <td>
+                                    <%= inventory.stock %>
+                                </td>
+                                <td>
                                     <%= inventory.unit%>
                                 </td>
                                 <td>
@@ -55,17 +83,15 @@
                                     <%= inventory.location %>
                                 </td>
                                 <td>
-                                    <%= inventory.cost.toFixed(2) %>
+                                    <%= inventory.cost %>
                                 </td>
                                 <td>
                                     <%= inventory.createdDate.toISOString().split('T')[0] %>
                                 </td>
                                 <td>
                                     <a href="/<%= inventory._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
-                                    <form method="POST" action="/<%= inventory._id %>/delete"
-                                        style="display: inline;">
-                                        <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure?')">Delete</button>
+                                    <form method="POST" action="/<%= inventory._id %>/delete" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
                                     </form>
                                 </td>
                             </tr>
@@ -74,5 +100,107 @@
                 </table>
             </div>
             <% } %>
+            <div>
+                <input type="text" name="userId" value="<%= userId %>" hidden />
+            </div>
 
+<!-- ============================================ -->
+<!--               Total Calculation              -->
+<!-- ============================================ -->
+
+            <div style="margin-top: 5px;">
+            <div class="total my-4 text-center" style="background-color: #28a745; color: white; font-weight: bold;">     
+                    <% let total=0%>
+                    <% for (let i=0; i < inventories.length; i++){%>
+                    <% total +=parseFloat(inventories[i].cost)%>
+                    <%}%>
+                    <h2>Total Inventory Value:</h2>
+                        <p class = "text-center" style = "font-size: 20px;">$<%= total.toFixed(2) %></p>
+                            <%# ToFixed(2) only two decimal allow
+                            reference:https://www.w3schools.com/jsref/jsref_tofixed.asp%>
+            </div>
+            </div>
+
+<!-- ============================================ -->
+<!--               Expiring Date                  -->
+<!-- ============================================ -->
+
+            <div style="margin-top: 100px;">
+            <h2 class = "text-center"style="background-color: #a72828; color: white; font-weight: bold; padding: 10px">🚨Items Expiring Within 3 Days</h2>
+            <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead >
+                    <tr>
+                        <th style="background-color: #dc5959;">Ingredient</th>
+                        <th style="background-color: #dc5959;">Quantity</th>
+                        <th style="background-color: #dc5959;"> Location</th>
+                        <th style="background-color: #dc5959;">Expiration Date</th>
+                        <th style="background-color: #dc5959;">Days Left</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <% for (let i=0; i < inventories.length; i++){
+                    const currentDate = new Date();
+                    const expirationDate = new Date(inventories[i].expirationDate);
+                    const dayDifferent = expirationDate - currentDate;
+                    const dayLeft = Math.ceil(dayDifferent / (1000 * 60 * 60 * 24))
+
+                    if(dayLeft <=3){ %>
+                        <tr class = "<%= dayLeft <= 0? 'table-danger' : 'table-warning' %>">
+                            <td><%= inventories[i].ingredientName%></td>
+                            <td><%= inventories[i].quantity%></td>
+                            <td><%= inventories[i].location%></td>
+                            <td><%= inventories[i].expirationDate.toISOString().split('T')[0]%></td>
+                            <td>
+                                <% if(dayLeft==0 ){ %>
+                                    <p>Expired</p>
+                                <%} else if(dayLeft <=3){ %>
+                                    <p><%= dayLeft%></p>
+                                <% }%>
+                            </td>
+                        </tr>
+                    <%} 
+                }%>
+                </tbody>
+            </table>
+        </div> 
+        </div>
+
+<!-- ============================================ -->
+<!--                 Stock Alert                  -->
+<!-- ============================================ -->
+
+        <div style="margin-top: 100px;">
+            <h2 class="text-center" style="background-color: #dcd859; color: white; font-weight: bold; padding: 10px;">⚠️Low Stock Item</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th style="background-color: #eae794;">Ingredient</th>
+                        <th style="background-color: #eae794;">Current Stock</th>
+                        <th style="background-color: #eae794;"> Location</th>
+                        <th style="background-color: #eae794;">Cost per Unit</th>
+                        <th style="background-color: #eae794;">Suggested order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i=0; i < inventories.length; i++){
+                        if(inventories[i].quantity < inventories[i].stock){
+                            let suggestion = inventories[i].stock - inventories[i].quantity;
+                    %>
+                            <tr>
+                                <td><%= inventories[i].ingredientName%></td>
+                                <td><%= inventories[i].quantity%></td>
+                                <td><%= inventories[i].location%></td>
+                                <td><%= inventories[i].cost%></td>
+                                <td><%= suggestion %></td>
+                            </tr>
+                        <% }
+                    } %>
+                </tbody>
+            </table>
+        </div>
+</body>
+            
 <%- include('partials/footer') %>

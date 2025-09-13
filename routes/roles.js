@@ -3,6 +3,7 @@ const Role = require('../models/Role');
 const Recipe = require('../models/Recipe');
 const Inventory = require('../models/Inventory');
 const router = express.Router();
+let loggedUserId;
 
 //This is to show the registration form add-role.ejs
 router.get('/api/add-role-34890645', function(req,res){
@@ -22,15 +23,18 @@ router.get('/api/chef-page-34890645', function (req, res) {
     const fullName = req.query.fullName || null;
     console.log("Email:", email);
     console.log("FullName:", fullName);
-    res.render('chef-home', {email, fullName});
+    console.log("UserId", userId);
+    res.render('chef-home', {email, fullName, userId});
 });
 
 router.get('/api/manager-page-34890645', function (req, res) {
     const email = req.query.email || null;
     const fullName = req.query.fullName || null;
+    const userId = req.query.userId || null;
     console.log("Email:", email);
     console.log("FullName:", fullName);
-    res.render('manager-home', { email, fullName })
+    console.log("UserId", userId);
+    res.render('manager-home', { email, fullName, userId })
 });
 
 //This is for the admin role, they can manage all users, recipes, and inventory
@@ -49,7 +53,7 @@ router.post('/rolesAdd', async function(req,res){
         const { userId, email, fullName, role, phone, password } = req.body;
 
         const newRole = new Role({
-            userId,
+            userId,  
             email,
             fullName,
             role,
@@ -86,7 +90,7 @@ router.get('/api/login-34890645', function(req,res){
 
 router.post('/loginUser', async function(req,res){
     try {
-        const {email, password} = req.body;
+        const {email, password,} = req.body;
         const user = await Role.findOne({email});
 
         if(!user){
@@ -101,9 +105,9 @@ router.post('/loginUser', async function(req,res){
         if(user.role === 'Admin'){
             return res.redirect(`/api/admin-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}`); //this make sure the email is pass through
         } else if (user.role === 'Chef'){
-            return res.redirect(`/api/chef-page-34890645?email=${encodeURIComponent(user.email, user.fullName)}&fullName=${encodeURIComponent(user.fullName)}`)
+            return res.redirect(`/api/chef-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&userId=${encodeURIComponent(user.userId)}`)
         } else if (user.role === 'Manager'){
-            return res.redirect(`/api/manager-page-34890645?email=${encodeURIComponent(user.email, user.fullName)}&fullName=${encodeURIComponent(user.fullName)}`)
+            return res.redirect(`/api/manager-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&userId=${encodeURIComponent(user.userId)}`)
         } else {
             return res.redirect('/login-34890645');
         }
@@ -133,11 +137,12 @@ router.get('/', async function (req, res) {
 
 //GET to the recipe page
 router.get("/api/add-recipes-34890645", function (req, res) {
-    res.render('add-recipes');
+    res.render('add-recipes',{userId:loggedUserId});
 });
 
 router.post("/addRecipe", async function (req, res) {
     try {
+        console.log(req.body.userId);
         let aRole = await Role.findOne({ userId: req.body.userId});
         console.log(aRole)
         if (!aRole) {
@@ -148,7 +153,7 @@ router.post("/addRecipe", async function (req, res) {
         const nameIngredients = splitWord(ingredientInput);
         const newRecipe = new Recipe({
             recipeId,
-            userId: aRole.userId,
+            userId: [aRole._id],
             title,
             chef,
             ingredients: nameIngredients,
@@ -181,8 +186,12 @@ router.post("/addRecipe", async function (req, res) {
 
 router.get('/api/view-inventory-34890645', async function (req, res) {
     try {
+        const userId = req.query.userId || null;
+        const email = req.query.email || null;
+        const fullName = req.query.fullName || null;
+        console.log("UserIdForViewInventory", userId);
         const inventories = await Inventory.find({});
-        res.render('view-inventory', { inventories });
+        res.render('view-inventory', { inventories, userId, email, fullName });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -191,17 +200,23 @@ router.get('/api/view-inventory-34890645', async function (req, res) {
 
 // GET add inventory form
 router.get("/api/add-inventories-34890645", function (req, res) {
-    res.render('add-inventory');
+    const userId = req.query.userId || null;
+    console.log("UserIdForInventory", userId);
+    res.render('add-inventory',{userId});
 });
 
 // POST create new inventory
 router.post("/addInventory", async function(req,res){
     try {
-        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, createdDate } = req.body;
-
-        // Create new student instance
+        let aRole = await Role.findOne({ userId: req.body.userId });
+        console.log(aRole)
+        if (!aRole) {
+            return res.status(400).send("Invalid user/role ID"); // stop here if not found
+        }
+        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost,stock, createdDate } = req.body;
         const newInventory = new Inventory({
             inventoryId,
+            userId: [aRole._id], //make it a foreign key
             ingredientName,
             quantity: parseFloat(quantity),
             unit,
@@ -210,11 +225,12 @@ router.post("/addInventory", async function(req,res){
             expirationDate,
             location,
             cost: parseFloat(cost),
+            stock: parseInt(stock),
             createdDate
         });
 
         await newInventory.save();
-        res.redirect('/api/view-inventory-34890645');
+        res.redirect(`/api/view-inventory-34890645?userId=${req.body.userId}`);
     } catch (error) {
         console.error(error);
 
@@ -252,7 +268,7 @@ router.get('/:id/edit', async (req, res) => {
 // POST update inventory
 router.post("/:id/update", async function (req, res) {
     try {
-        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, createdDate } = req.body;
+        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, stock, createdDate } = req.body;
 
         // Create new student instance
         const updateInventory = Inventory.findByIdAndUpdate(
@@ -267,6 +283,7 @@ router.post("/:id/update", async function (req, res) {
             expirationDate,
             location,
             cost: parseFloat(cost),
+            stock: parseInt(stock),
             createdDate
         },
         {

@@ -1,1 +1,144 @@
-// this will be the form to edit the inventory and update it
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        View Inventory
+    </title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
+        <div class="container">
+            <a class="navbar-brand" href="/api/manager-page-34890645 ">
+                Manager CloudKitchen Pro
+            </a>
+        </div>
+    </nav>
+    <div class="container mt-4">
+
+    <h2 class="text-center">Edit Ingredient</h2>
+    <form method="POST" action="/<%= inventory._id %>/update" class="w-100" style="max-width: 1500px; padding-left: 70vh;">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Ingredient Name:</label>
+                    <input type="text" class="form-control" name="ingredientName" minlength="2" maxlength="50" required
+                        value="<%= inventory.ingredientName %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Quantity:</label>
+                    <input type="number" class="form-control" name="quantity" step="0.001" max="9999" required
+                        value="<%= inventory.quantity %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Cost:</label>
+                    <input type="number" class="form-control" name="cost" step="0.01" max="999.99" required
+                        value="<%= inventory.cost %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Unit:</label>
+                    <select class="form-control" name="unit" required>
+                        <option value="">Select a unit</option>
+                        <option value="pieces" <%=inventory.unit==='pieces' ?'selected' : '' %>>pieces</option>
+                        <option value="kg" <%=inventory.unit==='kg' ?'selected' : '' %>>kg</option>
+                        <option value="g" <%=inventory.unit==='g' ?'selected' : '' %>>g</option>
+                        <option value="liters" <%=inventory.unit==='liters' ?'selected' : '' %>>liters</option>
+                        <option value="ml" <%=inventory.unit==='ml' ?'selected' : '' %>>ml</option>
+                        <option value="cups" <%=inventory.unit==='cups' ?'selected' : '' %>>cups</option>
+                        <option value="tbsp" <%=inventory.unit==='tbsp' ?'selected' : '' %>>tbsp</option>
+                        <option value="tsp" <%=inventory.unit==='tsp' ?'selected' : '' %>>tsp</option>
+                        <option value="dozen" <%=inventory.unit==='dozen' ?'selected' : '' %>>dozen</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Category:</label>
+                    <select class="form-control" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Vegetables" <%=inventory.category==='Vegetables' ?'selected' : '' %>>
+                            Vegetables</option>
+                        <option value="Fruits" <%=inventory.category==='Fruits' ?'selected' : '' %>>Fruits</option>
+                        <option value="Meat" <%=inventory.category==='Meat' ?'selected' : '' %>>Meat</option>
+                        <option value="Dairy" <%=inventory.category==='Dairy' ?'selected' : '' %>>Dairy</option>
+                        <option value="Grains" <%=inventory.category==='Grains' ?'selected' : '' %>>Grains</option>
+                        <option value="Spices" <%=inventory.category==='Spices' ?'selected' : '' %>>Spices</option>
+                        <option value="Beverages" <%=inventory.category==='Beverages' ?'selected' : '' %>>Beverages
+                        </option>
+                        <option value="Frozen" <%=inventory.category==='Frozen' ?'selected' : '' %>>Frozen</option>
+                        <option value="Canned" <%=inventory.category==='Canned' ?'selected' : '' %>>Canned</option>
+                        <option value="Other" <%=inventory.category==='Other' ?'selected' : '' %>>Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Location:</label>
+                    <select class="form-control" name="location" required>
+                        <option value="">Select a location</option>
+                        <option value="Fridge" <%=inventory.location==='Fridge' ?'selected' : '' %>>Fridge</option>
+                        <option value="Freezer" <%=inventory.location==='Freezer' ?'selected' : '' %>>Freezer</option>
+                        <option value="Pantry" <%=inventory.location==='Pantry' ?'selected' : '' %>>Pantry</option>
+                        <option value="Counter" <%=inventory.location==='Counter' ?'selected' : '' %>>Counter</option>
+                        <option value="Cupboard" <%=inventory.location==='Cupboard' ?'selected' : '' %>>Cupboard
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Purchase Date:</label>
+                    <input type="date" class="form-control" name="purchaseDate"
+                        max="<%= new Date().toISOString().split('T')[0] %>" required
+                        value="<%= inventory.purchaseDate.toISOString().split('T')[0] %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Expiration Date:</label>
+                    <input type="date" class="form-control" name="expirationDate" required
+                        value="<%= inventory.expirationDate.toISOString().split('T')[0] %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Update Ingredient</button>
+            <a href="" class="btn btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</body>
+
+    <%- include('partials/footer') %>

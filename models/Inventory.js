@@ -8,10 +8,10 @@ const inventorySchema = new mongoose.Schema({
         required: true,
         match: [/^I-\d{5}$/, 'Inventory Id must be I-XXXXX']
     },
-    //userId: [{ 
-               // type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
-                //ref: "Role" 
-    //}],
+    userId: [{ 
+            type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
+            ref: "Role" 
+    }],
     ingredientName: {
         type: String,
         required: [true, 'ingredientName is required'],
@@ -79,6 +79,12 @@ const inventorySchema = new mongoose.Schema({
         required: [true, 'cost is required'],
         min: [0.01, 'Cost must be at least $0.01'],
         max: [999.99, 'Cost must not go up to 999.99']
+    },
+    stock: {
+        type: Number,
+        required: [true, 'Stock is required'],
+        min: [1, 'Stock must be at least $0.01'],
+        max: [99, 'Stock must not go up to 999.99']
     },
     createdDate: {
         type: Date,

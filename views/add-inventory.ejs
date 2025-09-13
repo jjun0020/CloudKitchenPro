@@ -29,7 +29,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="text" class="form-label">Ingredient Name:</label>
+                        <label class="form-label">Ingredient Name:</label>
                         <input type="text" class="form-control" name="ingredientName" minlength="2" maxlength="50" required>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Quantity:</label>
+                        <label class="form-label">Quantity:</label>
                         <input type="number" class="form-control" name="quantity" step="0.001" max="9999" required>
                     </div>
                 </div>
@@ -47,8 +47,17 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Cost:</label>
+                        <label class="form-label">Cost:</label>
                         <input type="number" class="form-control" name="cost" step="0.01" max="999.99" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Stock:</label>
+                        <input type="number" class="form-control" name="stock" min="1" max="99" required>
                     </div>
                 </div>
             </div>
@@ -113,7 +122,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Purchase Date:</label>
+                        <label class="form-label">Purchase Date:</label>
                         <input type="date" class="form-control" name="purchaseDate" max="{{today}}" required>
                     </div>
                 </div>
@@ -122,10 +131,14 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">Expiration Date:</label>
+                        <label class="form-label">Expiration Date:</label>
                         <input type="date" class="form-control" name="expirationDate" required>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <input type="text" name="userId" value="<%= userId %>" hidden />
             </div>
 
             <div class="mb-3">
