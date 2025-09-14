@@ -13,12 +13,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="/api/chef-page-34890645?email=<%=encodeURIComponent(email)%>&&fullName=<%=encodeURIComponent(fullName)%>">
+            <a class="navbar-brand" href="/api/chef-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
                 Chef CloudKitchen Pro
             </a>
             <div class="navbar-nav">
-                <a class="nav-link" href="">All Recipe</a>
-                <a class="nav-link" href="/api/add-recipes-34890645">Add Recipe</a>
+                <a class="nav-link" href="/api/view-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">View Recipe</a>
+                <a class="nav-link" href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add Recipe</a>
+                <a class="nav-link" href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update Recipe</a>
+                <a class="nav-link" href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete Recipe</a>
                 <a href="/api/login-34890645" class="btn" style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
             </div>
         </div>
@@ -29,6 +31,23 @@
         <p class="lead">Enterprise Kitchen Management & Recipe Intelligence Platform</p>
         <p class="lead fw-bold">Welcome Chef <%= fullName %>!</p>
         <p class="lead fw-bold"> <%= email %>!</p>
+    </div>
+    
+    <div class = "stats">
+        <p>Count Users: <%= countUser%></p>
+        <p>Count Recipes: <%= countRecipe %>
+        </p>
+    </div>
+
+    <div>
+        <input type="text" name="userId" value="<%= userId %>" />
+    </div>
+    <div>
+        <input type="text" name="fullName" value="<%= fullName %>" />
+    </div>
+    
+    <div>
+        <input type="text" name="email" value="<%= email %>" />
     </div>
 
     

@@ -14,116 +14,112 @@
                 href="/api/chef-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
                 Chef CloudKitchen Pro
             </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/api/view-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">View Recipe</a>
-                <a class="nav-link" href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add Recipe</a>
-                <a class="nav-link" href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update Recipe</a>
-                <a class="nav-link"href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete Recipe</a>
-
-                <a href="/api/login-34890645" class="btn" style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
-            </div>
         </div>
     </nav>
 
-    <h2 class = "text-center">🍳 Add To CookBook </h2>
-    <div class="d-flex justify-content-center align-items-center min-vh-100" >
-        
-        <form method="POST" action="/addRecipe" class="w-100" style="max-width: 1500px; padding-left: 70vh;">
+    <h2 class="text-center"> Edit CookBook </h2>
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+
+        <form method="POST" action="/<%= recipe._id %>/update" class="w-100" style="max-width: 1500px; padding-left: 70vh;">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="text" class="form-label">Title:</label>
-                        <input type="text" class="form-control" name="title" required>
+                        <input type="text" class="form-control" name="title" required
+                        value="<%= recipe.title %>">
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="firstName" class="form-label">Chef Name:</label>
-                        <input type="text" class="form-control" name="chef" required>
+                        <input type="text" class="form-control" name="chef" required
+                        value="<%= recipe.chef %>">
                     </div>
                 </div>
             </div>
-        
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="firstName" class="form-label">Ingredients:</label>
-                        <textarea type="text" class="form-control" name="ingredients" rows="4" required></textarea>
+                        <textarea type="text" class="form-control" name="ingredients" rows="4" required><%= recipe.ingredients %></textarea>
                     </div>
                 </div>
             </div>
-        
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="firstName" class="form-label">Instructions:</label>
-                        <textarea type="text" class="form-control" name="instructions" rows="4" required> </textarea>
+                        <textarea type="text" class="form-control" name="instructions" rows="4" required><%= recipe.instructions %> </textarea>
                     </div>
                 </div>
             </div>
-        
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Meal Type:</label>
                         <select class="form-control" name="mealType" required>
                             <option value="">Select a role</option>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Snack">Snack</option>
+                            <option value="Breakfast" <%=recipe.mealType==='Breakfast' ?'selected' : '' %>>Breakfast</option>
+                            <option value="Lunch" <%=recipe.mealType==='Lunch' ?'selected' : '' %>>Lunch</option>
+                            <option value="Dinner" <%=recipe.mealType==='Dinner' ?'selected' : '' %>>Dinner</option>
+                            <option value="Snack"<%=recipe.mealType==='Snack' ?'selected' : '' %>>Snack</option>
                         </select>
                     </div>
                 </div>
             </div>
-        
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Cuisine Type:</label>
                         <select class="form-control" name="cuisineType" required>
                             <option value="">Select a role</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Asian">Asian</option>
-                            <option value="Mexican">Mexican</option>
+                            <option value="Italian" <%=recipe.cuisineType ==='Italian' ?'selected' : '' %>>Italian</option>
+                            <option value="Asian" <%=recipe.cuisineType ==='Asian' ?'selected' : '' %>>Asian</option>
+                            <option value="Mexican" <%=recipe.cuisineType ==='Mexican' ?'selected' : '' %>>Mexican</option>
                         </select>
-        
+
                     </div>
                 </div>
             </div>
-        
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="firstName" class="form-label">Prep Time:</label>
-                        <input type="number" class="form-control" name="prepTime" min="1" max="480" required>
+                        <input type="number" class="form-control" name="prepTime" min="1" max="480" required
+                        value="<%= recipe.prepTime %>">
                     </div>
                 </div>
             </div>
-        
-        
+
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Difficulty:</label>
                         <select class="form-control" name="difficulty" required>
                             <option value="">Select a role</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
+                            <option value="Easy" <%=recipe.difficulty ==='Easy' ?'selected' : '' %>>Easy</option>
+                            <option value="Medium"  <%=recipe.difficulty ==='Medium' ?'selected' : '' %>>Medium</option>
+                            <option value="Hard"  <%=recipe.difficulty ==='Hard' ?'selected' : '' %>>Hard</option>
                         </select>
                     </div>
                 </div>
             </div>
-        
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="firstName" class="form-label">Servings:</label>
-                        <input type="number" class="form-control" name="servings" min="1" max="20" required>
+                        <input type="number" class="form-control" name="servings" min="1" max="20" required
+                        value="<%= recipe.servings %>">
                     </div>
                 </div>
             </div>
@@ -134,22 +130,22 @@
             <div>
                 <input type="text" name="fullName" value="<%= fullName %>" />
             </div>
-            
+
             <div>
                 <input type="text" name="email" value="<%= email %>" />
             </div>
 
-        
+
             <div class="mb-3">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Update Recipe</button>
                 <a href="" class="btn btn-secondary">Cancel</a>
             </div>
-        
+
         </form>
     </div>
-        
 
-        <%- include('partials/footer') %>
+
+    <%- include('partials/footer') %>
 </body>
 
 </html>

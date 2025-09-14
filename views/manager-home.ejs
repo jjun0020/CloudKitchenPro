@@ -13,12 +13,12 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
         <div class="container">
-            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=encodeURIComponent(email)%>&&fullName=<%=encodeURIComponent(fullName)%>">
+            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
                 Manager CloudKitchen Pro
             </a>
             <div class="navbar-nav">
-                <a class="nav-link" href="/api/view-inventory-34890645?userId=<%= userId %>">View Inventory</a>
-                <a class="nav-link" href="/api/add-inventories-34890645?userId=<%= userId %>">Add Inventory</a>
+                <a class="nav-link" href="/api/view-inventory-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">View Inventory</a>
+                <a class="nav-link" href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">Add Inventory</a>
                 <a href="/api/login-34890645" class="btn btn-danger">Logout</a>
             </div>
         </div>
@@ -34,7 +34,13 @@
     </div>
 
     <div>
-        <input type="text" name="userId" value="<%= userId %>" hidden/>
+        <input type="text" name="userId" value="<%= userId %>" />
+    </div>
+    <div>
+        <input type="text" name="fullName" value="<%= fullName %>"  />
     </div>
     
+    <div>
+        <input type="text" name="email" value="<%= email %>"  />
+    </div>
     <div class="container mt-4">

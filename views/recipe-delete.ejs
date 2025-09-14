@@ -25,9 +25,8 @@
                     href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add
                     Recipe</a>
                 <a class="nav-link"
-                    href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update Recipe</a>
-                <a class="nav-link"
-                    href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete Recipe</a>
+                    href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete
+                    Recipe</a>
 
                 <a href="/api/login-34890645" class="btn"
                     style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
@@ -37,16 +36,16 @@
     <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>All Recipe</h2>
-        <div class="d-flex gap-2">
-        <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>" class="btn btn-success">+ Add New Recipe</a>
-        <a href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>" class="btn" style = "background-color: rgb(237, 26, 26); color: white;">- Delete Recipe</a>
-    </div>
+        <h2>Delete Recipe</h2>
+        <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>"
+            class="btn btn-success">+ Add New Recipe</a>
     </div>
 
     <% if (recipes.length===0) { %>
         <div class="alert alert-info">
-            No Recipe found. <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add the first recipe</a>
+            No Ingredient found. <a
+                href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add the
+                first ingredient</a>
         </div>
         <% } else { %>
             <div class="table-responsive">
@@ -64,6 +63,7 @@
                             <th>Difficulty</th>
                             <th>Servings</th>
                             <th>created Date</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,20 +72,15 @@
                                 <td>
                                     <%= recipe.recipeId %>
                                 </td>
-
                                 <td>
                                     <%= recipe.title %>
                                 </td>
-
                                 <td>
                                     <%= recipe.chef %>
                                 </td>
-
                                 <td>
-                                    <%= recipe.ingredients %>
+                                    <%= recipe.ingredients%>
                                 </td>
-
-
                                 <td>
                                     <%= recipe.instructions %>
                                 </td>
@@ -113,21 +108,29 @@
                                 <td>
                                     <%= recipe.createdDate.toISOString().split('T')[0] %>
                                 </td>
+
+                                <td>
+                                    <form method="POST" action="/<%= recipe._id %>/delete?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                </td>
                             </tr>
                             <% }); %>
                     </tbody>
                 </table>
             </div>
         <% } %>
+
         <div>
-            <input type="text" name="userId" value="<%= userId %>" />
+            <input type="text" name="userId" value="<%= userId %>" hidden />
         </div>
         <div>
-            <input type="text" name="fullName" value="<%= fullName %>" />
+            <input type="text" name="fullName" value="<%= fullName %>" hidden/>
         </div>
         
         <div>
-            <input type="text" name="email" value="<%= email %>" />
+            <input type="text" name="email" value="<%= email %>" hidden/>
         </div>
-    </body>
+
 <%- include('partials/footer') %>

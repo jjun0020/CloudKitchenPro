@@ -9,8 +9,8 @@ const recipeSchema = new mongoose.Schema({
         match: [/^R-\d{5}$/, 'Recipe Id must be R-XXXXX']
     },
     userId: [{ 
-            type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
-            ref: "Role" 
+        type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
+        ref: "Role" 
     }],
     title: {
         type: String,
@@ -27,11 +27,7 @@ const recipeSchema = new mongoose.Schema({
         match: [/^[A-Za-z\s'-]+$/, 'Please enter a valid chef Name']
     },
     ingredients: [{
-        type: [{
-            ingredientName: { type: String, required: true },
-            quantity: { type: Number, required: true },
-            unit: { type: String, required: true }
-        }],
+        type: [String], //Array of String
         required: true,
         validate: [{
             validator: function (array) {

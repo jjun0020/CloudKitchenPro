@@ -4,18 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        View Inventory
-    </title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
         <div class="container">
-            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=encodeURIComponent(email)%>&&fullName=<%=encodeURIComponent(fullName)%>">
+            <a class="navbar-brand"
+                href="/api/manager-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
                 Manager CloudKitchen Pro
             </a>
+            <div class="navbar-nav">
+                <a class="nav-link"
+                    href="/api/view-inventory-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">View Inventory</a>
+                <a class="nav-link"
+                    href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">Add Inventory</a>
+                <a href="/api/login-34890645" class="btn"
+                    style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
+            </div>
         </div>
     </nav>
     <div class="container mt-4">
@@ -26,12 +32,12 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>All Inventory</h2>
-        <a href="/api/add-inventories-34890645?userId=<%= userId %>" class="btn btn-success">+ Add New Inventory</a>
+        <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" class="btn btn-success">+ Add New Inventory</a>
     </div>
 
     <% if (inventories.length===0) { %>
         <div class="alert alert-info">
-            No Ingredient found. <a href="/api/add-inventories-34890645?userId=<%= userId %>">Add the first ingredient</a>
+            No Ingredient found. <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">Add the first ingredient</a>
         </div>
         <% } else { %>
             <div class="table-responsive">
@@ -89,7 +95,7 @@
                                     <%= inventory.createdDate.toISOString().split('T')[0] %>
                                 </td>
                                 <td>
-                                    <a href="/<%= inventory._id %>/edit" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="/<%= inventory._id %>/edit?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" class="btn btn-sm btn-warning">Edit</a>
                                     <form method="POST" action="/<%= inventory._id %>/delete" style="display: inline;">
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
                                     </form>
@@ -100,9 +106,6 @@
                 </table>
             </div>
             <% } %>
-            <div>
-                <input type="text" name="userId" value="<%= userId %>" hidden />
-            </div>
 
 <!-- ============================================ -->
 <!--               Total Calculation              -->
@@ -201,6 +204,19 @@
                 </tbody>
             </table>
         </div>
+
+        <div>
+            <input type="text" name="userId" value="<%= userId %>" hidden/>
+        </div>
+
+        <div>
+            <input type="text" name="fullName" value="<%= fullName %>" hidden/>
+        </div>
+        
+        <div>
+            <input type="text" name="email" value="<%= email %>" hidden/>
+        </div>
+        
 </body>
             
 <%- include('partials/footer') %>

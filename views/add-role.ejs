@@ -74,7 +74,15 @@
                     </div>
                 </div>
             </div>
-    
+            <%# typeof error !=='undefined' && error: check if the error exists%>
+            <%# typeof return string%>
+            <%# reference: https://www.w3schools.com/js/js_typeof.asp%>
+            <% if (typeof error !=='undefined' && error) { %>
+                <p style="color:red">
+                    <%= error %>
+                </p>
+            <% } %>
+
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <a href="" class="btn btn-secondary">Cancel</a>

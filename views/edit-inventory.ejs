@@ -13,7 +13,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
         <div class="container">
-            <a class="navbar-brand" href="/api/manager-page-34890645 ">
+            <a class="navbar-brand" href="/api/manager-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
                 Manager CloudKitchen Pro
             </a>
         </div>
@@ -48,6 +48,16 @@
                     <label class="form-label">Cost:</label>
                     <input type="number" class="form-control" name="cost" step="0.01" max="999.99" required
                         value="<%= inventory.cost %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Stock:</label>
+                    <input type="number" class="form-control" name="stock" min="1" max="99" required
+                        value="<%= inventory.stock %>">
                 </div>
             </div>
         </div>
@@ -137,8 +147,19 @@
             <button type="submit" class="btn btn-primary">Update Ingredient</button>
             <a href="" class="btn btn-secondary">Cancel</a>
         </div>
-
     </form>
+
+    <div>
+        <input type="text" name="userId" value="<%= userId %>" />
+    </div>
+    
+    <div>
+        <input type="text" name="fullName" value="<%= fullName %>" />
+    </div>
+    
+    <div>
+        <input type="text" name="email" value="<%= email %>" />
+    </div>
 </body>
 
     <%- include('partials/footer') %>
