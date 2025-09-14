@@ -11,6 +11,10 @@
 </head>
 
 <body>
+<!-- ============================================ -->
+<!--                Navigation                    -->
+<!-- ============================================ -->
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="/api/chef-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
@@ -26,28 +30,52 @@
         </div>
     </nav>
 
+<!-- ============================================ -->
+<!--                Hero Section                  -->
+<!-- ============================================ -->
+
     <div class="container text-center my-5 bg-info text-white p-5 rounded">
         <h1 class="display-4">🍳CloudKitchen Pro🍰</h1>
         <p class="lead">Enterprise Kitchen Management & Recipe Intelligence Platform</p>
         <p class="lead fw-bold">Welcome Chef <%= fullName %>!</p>
         <p class="lead fw-bold"> <%= email %>!</p>
     </div>
+
+<!-- ============================================ -->
+<!--       Display Total Chef and Recipe          -->
+<!-- ============================================ -->
     
-    <div class = "stats">
-        <p>Count Users: <%= countUser%></p>
-        <p>Count Recipes: <%= countRecipe %>
-        </p>
+    <div class="d-flex gap-2 justify-content-center gap-4 my-4">
+        <div class = "col-md-3">
+            <div class = "ard text-center shadow-sm">
+                <div class = "card-body">
+                    <h3 class = "card-title">👩‍🍳Total Chefs</h3>
+                    <p class = "display-5 text-primary"> <%= countChef %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="ard text-center shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title">📚Total Recipes</h3>
+                    <p class="display-5 text-primary">
+                        <%= countRecipe %>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div>
-        <input type="text" name="userId" value="<%= userId %>" />
+        <input type="text" name="userId" value="<%= userId %>" hidden />
     </div>
     <div>
-        <input type="text" name="fullName" value="<%= fullName %>" />
+        <input type="text" name="fullName" value="<%= fullName %>" hidden/>
     </div>
     
     <div>
-        <input type="text" name="email" value="<%= email %>" />
+        <input type="text" name="email" value="<%= email %>" hidden />
     </div>
 
     

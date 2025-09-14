@@ -3,7 +3,12 @@ const Role = require('../models/Role');
 const Recipe = require('../models/Recipe');
 const Inventory = require('../models/Inventory');
 const router = express.Router();
-let loggedUserId;
+
+
+///////////////////////////////
+//          ROLE            //
+//////////////////////////////
+
 
 //This is to show the registration form add-role.ejs
 router.get('/api/add-role-34890645', function(req,res){
@@ -19,7 +24,7 @@ router.get('/api/admin-page-34890645', function(req,res){
 });
 
 router.get('/api/chef-page-34890645',async function (req, res) {
-    const countUser = await Role.countDocuments({});
+    const countChef = await Role.countDocuments({ role: "Chef" });
     const countRecipe = await Recipe.countDocuments({});
     const email = req.query.email || null;
     const fullName = req.query.fullName || null;
@@ -27,11 +32,11 @@ router.get('/api/chef-page-34890645',async function (req, res) {
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
-    res.render('chef-home', { email, fullName, userId, countUser, countRecipe });
+    res.render('chef-home', { email, fullName, userId, countChef, countRecipe });
 });
 
 router.get('/api/manager-page-34890645',async function (req, res) {
-    const countUser = await Role.countDocuments({})
+    const countManger = await Role.countDocuments({role: "Manager"})
     const countInventory = await Inventory.countDocuments({});
     const email = req.query.email || null;
     const fullName = req.query.fullName || null;
@@ -39,7 +44,7 @@ router.get('/api/manager-page-34890645',async function (req, res) {
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
-    res.render('manager-home', { email, fullName, userId, countUser, countInventory  })
+    res.render('manager-home', { email, fullName, userId, countManger, countInventory  })
 });
 
 //This is for the admin role, they can manage all users, recipes, and inventory
