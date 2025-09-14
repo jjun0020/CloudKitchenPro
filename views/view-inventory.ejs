@@ -11,7 +11,7 @@
 <!-- ============================================ -->
 <!--                Navigation                    -->
 <!-- ============================================ -->
- 
+
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
         <div class="container">
             <a class="navbar-brand"
@@ -99,8 +99,8 @@
                                     <%= inventory.createdDate.toISOString().split('T')[0] %>
                                 </td>
                                 <td>
-                                    <a href="/<%= inventory._id %>/edit?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" class="btn btn-sm btn-warning">Edit</a>
-                                    <form method="POST" action="/<%= inventory._id %>/delete" style="display: inline;">
+                                    <a href="/inventories/<%= inventory._id %>/edit?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" class="btn btn-sm btn-warning">Edit</a>
+                                    <form method="POST" action="/inventories/<%= inventory._id %>/delete" style="display: inline;">
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
                                     </form>
                                 </td>
