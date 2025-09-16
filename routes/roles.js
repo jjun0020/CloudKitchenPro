@@ -9,24 +9,30 @@ const router = express.Router();
 //          ROLE            //
 //////////////////////////////
 
-router.get('/api/admin-page-34890645', function(req,res){
-    const email = req.query.email || null;
-    const fullName = req.query.fullName || null;
-    console.log("Email:", email);
-    console.log("FullName:", fullName);
-    res.status(200).render('admin-home', { email, fullName });
-});
-
-router.get('/api/chef-page-34890645',async function (req, res) {
-    const countChef = await Role.countDocuments({ role: "Chef" });  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
+router.get('/api/admin-page-34890645', async function(req,res){
+    const countUser = await Role.countDocuments();  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
     const countRecipe = await Recipe.countDocuments({});
+    const countInventory = await Inventory.countDocuments({});
     const email = req.query.email || null;
     const fullName = req.query.fullName || null;
     const userId = req.query.userId || null;
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
-    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe });
+    res.status(200).render('admin-home', { email, fullName, userId, countUser, countRecipe, countInventory });
+});
+
+router.get('/api/chef-page-34890645',async function (req, res) {
+    const countChef = await Role.countDocuments({ role: "Chef" });  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
+    const countRecipe = await Recipe.countDocuments({});
+    const countInventory = await Inventory.countDocuments({});
+    const email = req.query.email || null;
+    const fullName = req.query.fullName || null;
+    const userId = req.query.userId || null;
+    console.log("Email:", email);
+    console.log("FullName:", fullName);
+    console.log("UserId", userId);
+    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory });
 });
 
 router.get('/api/manager-page-34890645',async function (req, res) {
@@ -38,7 +44,7 @@ router.get('/api/manager-page-34890645',async function (req, res) {
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
-    res.status(200).render('manager-home', { email, fullName, userId, countManger, countInventory  })
+    res.status(200).render('manager-home', { email, fullName, userId, countManger, countInventory })
 });
 
 //This is for the admin role, they can manage all users, recipes, and inventory
@@ -191,14 +197,16 @@ router.post("/addRecipe", async function (req, res) {
         if (!aRole) {
             return res.status(400).send("Invalid user/role ID"); // stop here if not found
         }
-        const { recipeId, title, chef, ingredients, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        const instructionsSpilt = instructions.split(/,|\n/);
+        const ingrdientsSpilt = req.body.ingredients.split(/\n|,/).map(item => splitWord(item.trim()));
         const newRecipe = new Recipe({
             recipeId,
             userId: [aRole._id],
             title,
             chef,
-            ingredients,
-            instructions,
+            ingredients: ingrdientsSpilt,
+            instructions: instructionsSpilt,
             mealType,
             cuisineType,
             prepTime,
@@ -290,7 +298,9 @@ router.post("/:id/update", async function (req, res) {
         const aRole = await Role.findById(recipe.userId[0]);
         if (!aRole) return res.status(400).send("Invalid user error in update");
 
-        const { recipeId, title, chef, ingredients, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        const instructionsSpilt = instructions.split(/,|\n/);
+        const ingrdientsSpilt = req.body.ingredients.split(/\n|,/).map(item => splitWord(item.trim()));
         const updateRecipe = await Recipe.findByIdAndUpdate(
             req.params.id,
             {
@@ -298,8 +308,8 @@ router.post("/:id/update", async function (req, res) {
             userId: [aRole._id],
             title,
             chef,
-            ingredients,
-            instructions,
+            ingredients: ingrdientsSpilt,
+            instructions: instructionsSpilt,
             mealType,
             cuisineType,
             prepTime,
@@ -342,7 +352,8 @@ router.get('/api/update-recipes-34890645',async function(req,res){
         const email = req.query.email || null;
         const fullName = req.query.fullName || null;
         const recipes = await Recipe.find({})
-        res.render('update-recipe', { recipes, 
+        res.render('update-recipe', { 
+            recipes, 
             recipe: null, 
             message: '', 
             userId, 
@@ -354,12 +365,15 @@ router.get('/api/update-recipes-34890645',async function(req,res){
     }
 })
 
+// POST update recipe
 router.post('/updateRecipeByid',async function (req, res) {
     try {
         const recipeId = req.body.recipeId;
+        const recipes = await Recipe.find({});
 
         if(!recipeId){
             return res.status(200).render('update-recipe', { 
+                recipes,
                 recipe: null, 
                 message: 'Please enter Id', 
                 userId: req.body.userId || null,
@@ -370,6 +384,7 @@ router.post('/updateRecipeByid',async function (req, res) {
 
         if (!recipe) {
             return res.status(200).render('update-recipe', {
+                recipes,
                 recipe: null, 
                 message: 'Recipe not found', 
                 userId: req.body.userId || null,
@@ -377,6 +392,7 @@ router.post('/updateRecipeByid',async function (req, res) {
                 fullName: req.body.fullName || null });
         } else {
             return res.status(200).render('update-recipe', {
+                recipes,
                 recipe: recipe,
                 message: '',
                 userId: req.body.userId || null,
@@ -390,6 +406,41 @@ router.post('/updateRecipeByid',async function (req, res) {
         res.status(500).send('Server Error');
     }
 })
+
+//HD Task 1
+//recipe integration 
+router.get('/api/recipe-integration-34890645', async function(req,res){
+    try{
+        const inventories = await Inventory.find({});
+        const recipes = await Recipe.find({});
+        const userId = req.query.userId || null;
+        const email = req.query.email || null;
+        const fullName = req.query.fullName || null;
+        const recommendRecipe = await Recipe.aggregate([
+            {
+                // join the Recipe and Inventory togethere
+                $lookup: {
+                    from: 'inventories', // the collection to join in the recipe integration is inventory
+                    localField: 'ingredients', // array of string
+                    foreignField: 'ingredientName', // name of ingredient in the inventory
+                    as: 'availableIngredients' //matched inventory
+                }
+            },
+            {
+                $addFields: { //reference: https://www.w3schools.com/mongodb/mongodb_aggregations_addFields.php
+                    // size count the returnt the total number of array reference: https://www.mongodb.com/docs/manual/reference/operator/aggregation/size/
+                    totalIngredients: { $size: "$ingredients" },  // this is for counting the number in the ingredient array
+                    matchIngredients: { $size: "$availableIngredients"} // This is from the lookup, can recommend recipe base on the ingredient
+                }
+            }
+        ]);
+        res.status(200).render('recipe-integration', { recommendRecipe, userId,email, fullName, recipes, inventories })
+    }catch(error){
+        console.log(error)
+        res.status(500).send("Sever Error")
+    }
+});
+
 
 
 
@@ -560,5 +611,30 @@ router.post('/inventories/:id/delete', async (req, res) => {
 });
 
 module.exports = router;
+    
+function splitWord(input) {
+    const units = ["kg", "g", "liters", "ml", "cups", "tbsp", "tsp", "pieces", "dozen"]; // unit
+    input = input.trim(); //remove the space, incase uer put it in
+    let words = input.split(" ");
+    let ingredientNameParts = []; //this is to store actual words e.g eggs
+    let quantity = 1;
+    let unit = "";
+
+    for (let word of words) { // reference:https://www.w3schools.com/js/js_loop_forof.asp
+        if (!isNaN(word) && word !== "") {   //NaN is not a Number reference: https://www.w3schools.com/jsref/jsref_isnan.asp
+            quantity = parseInt(word)          //store in the number              
+        } else if (units.includes(word.toLowerCase())) {
+            unit = word
+        } else {
+            ingredientNameParts.push(word);
+        }
+    };
+
+    return {
+        itemName: ingredientNameParts.join(" "), //making it into a single string
+        itemQuantity: quantity,
+        itemUnit: unit
+    }
+}
 
 

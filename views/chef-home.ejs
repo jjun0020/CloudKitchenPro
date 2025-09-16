@@ -25,6 +25,7 @@
                 <a class="nav-link" href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add Recipe</a>
                 <a class="nav-link" href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update Recipe</a>
                 <a class="nav-link" href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete Recipe</a>
+                <a class="nav-link" href="/api/recipe-integration-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">HD 1</a>
                 <a href="/api/login-34890645" class="btn" style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
             </div>
         </div>
@@ -61,6 +62,17 @@
                     <h3 class="card-title">📚Total Recipes</h3>
                     <p class="display-5 text-primary">
                         <%= countRecipe %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="ard text-center shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title">📦Total Inventories</h3>
+                    <p class="display-5 text-primary">
+                        <%= countInventory %>
                     </p>
                 </div>
             </div>

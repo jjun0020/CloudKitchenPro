@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Chef
+    </title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ============================================ -->
+<!--                Navigation                    -->
+<!-- ============================================ -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand"
+                href="/api/chef-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
+                Chef CloudKitchen Pro
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link"
+                    href="/api/view-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">View
+                    Recipe</a>
+                <a class="nav-link"
+                    href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add
+                    Recipe</a>
+                <a class="nav-link"
+                    href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update
+                    Recipe</a>
+                <a class="nav-link"
+                    href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete
+                    Recipe</a>
+                <a class="nav-link"
+                    href="/api/recipe-integration-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">HD 1
+                    </a>
+                <a href="/api/login-34890645" class="btn"
+                    style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+<!-- ============================================ -->
+<!--                Latest Recipe                 -->
+<!-- ============================================ -->
+ 
+    <h2 class= "text-center" style=" color: black; font-weight: bold; padding: 5px; margin-top: 10px;">Recipe Recommendation& Advanced
+        MongoDB Queries</h2>
+
+    <div class="container mt-4">
+        <h2 class= "text-center" style="background-color: #28a745; color: white; font-weight: bold; padding: 5px; margin-top: 10px;">Latest Recipe</h2>
+        <div class="d-flex gap-2 justify-content-center gap-4 my-4">
+            <% if (recipes.length===0) { %>
+                <div class="alert alert-info">
+                    No Recipe available. <a
+                        href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add the first
+                        recipe</a>
+                </div>
+                <% } else { %>
+                    <% recipes.forEach(recipe=> { %>
+                        
+                            <div class="col-md-3">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title"> <%= recipe.title%></h3>
+                                        <p> Chef: <%= recipe.chef%></p>
+                                        <p> Difficulty: <%= recipe.difficulty%></p>
+                                        <p> Prep Time: <%= recipe.prepTime%></p>
+                                    </div>
+                                </div>
+                            </div>
+                    <%  }) %>
+                <% } %>
+        </div>
+<!-- ============================================ -->
+<!--     inventory optimization suggestions       -->
+<!-- ============================================ -->
+        <div style="margin-top: 50px;">
+            <h2 class="text-center" style="background-color: #e4ce2d; color: white; font-weight: bold; padding: 5px; margin-top: 10px;"> 🚨Items Expiring in 7 days</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <% if (inventories.length===0) { %>
+                        <div class="alert alert-info">
+                            No ingredient added. <a
+                                href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">Add ingredient now!
+                                recipe</a>
+                        </div>
+                        <% } else { %>
+                        <thead>
+                            <tr>
+                                <th style="background-color: #e0cd38;">Ingredient</th>
+                                <th style="background-color: #e0cd38;">Quantity</th>
+                                <th style="background-color: #e0cd38;"> Location</th>
+                                <th style="background-color: #e0cd38;">Expiration Date</th>
+                                <th style="background-color: #e0cd38;">Days Left</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <% for (let i=0; i < inventories.length; i++){  
+                                const currentDate= new Date();
+                                const expirationDate= new Date(inventories[i].expirationDate); 
+                                const dayDifferent = expirationDate - currentDate; 
+                                constdayLeft = Math.ceil(dayDifferent / (1000 * 60 * 60 * 24)) 
+                                if(dayLeft <= 7){ %>
+                                <tr class="<%= dayLeft <= 0? 'table-danger' : 'table-warning' %>">
+                                    <td>
+                                        <%= inventories[i].ingredientName%>
+                                    </td>
+                                    <td>
+                                        <%= inventories[i].quantity%>
+                                    </td>
+                                    <td>
+                                        <%= inventories[i].location%>
+                                    </td>
+                                    <td>
+                                        <%= inventories[i].expirationDate.toISOString().split('T')[0]%>
+                                    </td>
+                                    <td>
+                                        <% if(dayLeft==0 ){ %>
+                                            <p>Expired</p>
+                                        <%} else if(dayLeft <=3){ %>
+                                            <p> <%= dayLeft%></p>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <%
+                                    }   
+                                }
+                            %>
+                        </tbody>
+                    <% } %>
+                </table>
+            </div>
+        </div>
+
+
+<!-- ============================================ -->
+<!--             Recipe Recommendation            -->
+<!-- ============================================ -->
+        <div style="margin-top: 50px;">
+            <h2 class="text-center" style="background-color: #2e5687; color: white; font-weight: bold; padding: 5px; margin-top: 10px;">Recipes Recommendation </h2>
+            <div class="d-flex gap-2 justify-content-center gap-4 my-4">
+                <% if (recipes.length===0) { %>
+                    <div class="alert alert-info">
+                        No Recipe available. <a
+                            href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add the first
+                            recipe</a>
+                    </div>
+                    <% } else { %>
+                        <% recipes.forEach(recipe=> { %>
+                
+                            <div class="col-md-3">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="card-title"> <%= recipe.title%></h3>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+

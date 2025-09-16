@@ -26,22 +26,37 @@ const recipeSchema = new mongoose.Schema({
         maxlength: [50, 'Chef cannot exceed 50 characters'],
         match: [/^[A-Za-z\s'-]+$/, 'Please enter a valid chef Name']
     },
-    ingredients: [{
-        type: [String], //Array of String
+    ingredients: {
+        type: [{
+            itemName: {type: String,
+                required: true,
+                minlength: [3, "ingredient name must have at least 3 char"]
+            },
+            itemQuantity: {
+                type: Number,
+                required: true,
+                min: [1, "Quantity must be at least 1"]
+            },
+            itemUnit: {
+                type: String,
+                trim: true,
+                default: "" // this make it optional, if the user want to put the unit or not
+            }
+        }], 
         required: true,
         validate: [{
             validator: function (array) {
                 return array.length >= 1 && array.length <= 20
             },
-            message: "Instruction must contain 1 to 20 steps"
+            message: "Ingredient must contain 1 to 20 steps"
         }, {
             validator: function (array) {
-                return array.every(step => step.ingredientName.length >= 3);
+                return array.every(item => item.itemName && item.itemName.length >= 3); //this make sure the length of the name is at least more than 3 characters
             },
-            message: "Instructions must have at least 3 characters"
+            message: "Ingredient name must have at least 3 characters"
         }]
-    }],
-    instructions: [{
+    },
+    instructions: {
         type: [String], //array of string
         required: true,
         validate: [{
@@ -51,11 +66,11 @@ const recipeSchema = new mongoose.Schema({
             message: "Instruction must contain 1 to 15 steps"
         }, {
             validator: function(array){
-                return array.every(step => step.length >= 10);
+                return array.every(item => item.length >= 10);
             },
             message: "Instructions must have at least 10 characters"
         }]
-    }],
+    },
     mealType: {
         type: String,
         required: [true, 'mealType is required'],
@@ -96,7 +111,11 @@ const recipeSchema = new mongoose.Schema({
     }
 });
 
-
+// Cross-collection data analysis
+//ingredients is an array of strings in the Recipe
+//The index will jump to ingrdients, without looking at the whole thing
+//connect with the lookup localField
+recipeSchema.index({ ingredients: 1 });
 
 const Recipe = mongoose.model('Recipe', recipeSchema);
 

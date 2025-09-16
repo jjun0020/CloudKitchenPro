@@ -34,7 +34,9 @@
                 <a class="nav-link"
                     href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete
                     Recipe</a>
-
+                <a class="nav-link"
+                    href="/api/recipe-integration-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Recipe
+                    Recommendation</a>
                 <a href="/api/login-34890645" class="btn"
                     style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
             </div>
@@ -115,14 +117,27 @@
                                     </td>
 
                                     <td>
-                                        <%= recipe.ingredients %>
+                                        <ul>
+                                            <% recipe.ingredients.forEach(item=> { %>
+                                                <li>
+                                                    <%= item.itemQuantity %>
+                                                    <%= item.itemUnit %>
+                                                    <%= item.itemName %>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    
                                     </td>
-
-
+                                    
                                     <td>
-                                        <%= recipe.instructions %>
+                                        <ul>
+                                            <% recipe.instructions.forEach(item=> { %>
+                                                <li>
+                                                    <%= item %>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
                                     </td>
-
                                     <td>
                                         <%= recipe.mealType %>
                                     </td>

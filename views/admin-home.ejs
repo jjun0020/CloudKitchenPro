@@ -11,9 +11,9 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(170, 100, 236);">
         <div class="container">
-            <a class="navbar-brand" href="/api/admin-page-34890645?email=<%=encodeURIComponent(email) %>">
+            <a class="navbar-brand" href="/api/admin-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
                 Admin CloudKitchen Pro
             </a>
             <div class="navbar-nav">
@@ -24,13 +24,56 @@
         </div>
     </nav>
 
-    <div class="container text-center my-5 bg-info text-white p-5 rounded">
+<!-- ============================================ -->
+<!--                Hero Section                  -->
+<!-- ============================================ -->
+
+    <div class="container text-center my-5 text-white p-5 rounded" style="background-color: rgb(104, 42, 165);">
         <h1 class="display-4">🍳CloudKitchen Pro🍰</h1>
         <p class="lead">Enterprise Kitchen Management & Recipe Intelligence Platform</p>
-        <p class="lead fw-bold">Welcome <%= fullName %>!</p>
+        <p class="lead fw-bold">Welcome Admin <%= fullName %>!</p>
         <p class="lead fw-bold">
             <%= email %>!
         </p>
     </div>
 
     <div class="container mt-4">
+
+<!-- ============================================ -->
+<!--       Display Total Chef and Recipe          -->
+<!-- ============================================ -->
+
+<div class="d-flex gap-2 justify-content-center gap-4 my-4">
+    <div class="col-md-3">
+        <div class="ard text-center shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">🧑Total User</h3>
+                <p class="display-5 text-primary">
+                    <%= countUser %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="ard text-center shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">📚Total Recipes</h3>
+                <p class="display-5 text-primary">
+                    <%= countRecipe %>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="ard text-center shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">📦Total Inventories</h3>
+                <p class="display-5 text-primary">
+                    <%= countInventory %>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

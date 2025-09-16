@@ -92,6 +92,8 @@ const inventorySchema = new mongoose.Schema({
     }
 });
 
+// Cross-collection data analysis
+inventorySchema.index({ ingredientName: 1});
 
 const Inventory = mongoose.model('Inventory', inventorySchema);
 
