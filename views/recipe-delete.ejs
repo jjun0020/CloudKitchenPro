@@ -88,10 +88,26 @@
                                     <%= recipe.chef %>
                                 </td>
                                 <td>
-                                    <%= recipe.ingredients%>
+                                    <ul>
+                                        <% recipe.ingredients.forEach(item=> { %>
+                                            <li>
+                                                <%= item.itemQuantity %>
+                                                <%= item.itemUnit %>
+                                                <%= item.itemName %>
+                                            </li>
+                                        <% }) %>
+                                    </ul>
+                                
                                 </td>
+                                
                                 <td>
-                                    <%= recipe.instructions %>
+                                    <ul>
+                                        <% recipe.instructions.forEach(item=> { %>
+                                            <li>
+                                                <%= item %>
+                                            </li>
+                                        <% }) %>
+                                    </ul>
                                 </td>
 
                                 <td>

@@ -421,7 +421,7 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
                 // join the Recipe and Inventory togethere
                 $lookup: {
                     from: 'inventories', // the collection to join in the recipe integration is inventory
-                    localField: 'ingredients', // array of string
+                    localField: 'ingredients.itemName', // array of string
                     foreignField: 'ingredientName', // name of ingredient in the inventory
                     as: 'availableIngredients' //matched inventory
                 }
@@ -622,11 +622,11 @@ function splitWord(input) {
 
     for (let word of words) { // reference:https://www.w3schools.com/js/js_loop_forof.asp
         if (!isNaN(word) && word !== "") {   //NaN is not a Number reference: https://www.w3schools.com/jsref/jsref_isnan.asp
-            quantity = parseInt(word)          //store in the number              
-        } else if (units.includes(word.toLowerCase())) {
+            quantity = parseInt(word)          //store in the quantity             
+        } else if (units.includes(word.toLowerCase())) { // if match the unit
             unit = word
         } else {
-            ingredientNameParts.push(word);
+            ingredientNameParts.push(word); //else put it in the ingredientNameParts
         }
     };
 
