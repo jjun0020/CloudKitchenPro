@@ -1,47 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
 <!-- ============================================ -->
-<!--                Navigation                    -->
+<!--               Navigation Bar                 -->
 <!-- ============================================ -->
 
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5eb572;">
-        <div class="container">
-            <a class="navbar-brand"
-                href="/api/manager-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
-                Manager CloudKitchen Pro
-            </a>
-            <div class="navbar-nav">
-                <a class="nav-link"
-                    href="/api/view-inventory-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">View Inventory</a>
-                <a class="nav-link"
-                    href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">Add Inventory</a>
-                <a href="/api/login-34890645" class="btn"
-                    style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
-            </div>
-        </div>
-    </nav>
-    <div class="container mt-4">
+<%- include('partials/shared', { home, navBarColor, userId, email, fullName, role, invNav}) %>
 
 <!-- ============================================ -->
 <!--              Display Inventory               -->
 <!-- ============================================ -->
 
+<div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>All Inventory</h2>
-        <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" class="btn btn-success">+ Add New Inventory</a>
+        <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>" class="btn btn-success">+ Add New Inventory</a>
     </div>
 
     <% if (inventories.length===0) { %>
         <div class="alert alert-info">
-            No Ingredient found. <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>">Add the first ingredient</a>
+            No Ingredient found. <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>">Add the first ingredient</a>
         </div>
         <% } else { %>
             <div class="table-responsive">
@@ -99,8 +74,12 @@
                                     <%= inventory.createdDate.toISOString().split('T')[0] %>
                                 </td>
                                 <td>
-                                    <a href="/inventories/<%= inventory._id %>/edit?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="/inventories/<%= inventory._id %>/edit?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>" class="btn btn-sm btn-warning">Edit</a>
                                     <form method="POST" action="/inventories/<%= inventory._id %>/delete" style="display: inline;">
+                                        <input type="hidden" name="userId" value="<%= userId %>">
+                                        <input type="hidden" name="fullName" value="<%= fullName %>">
+                                        <input type="hidden" name="email" value="<%= email %>">
+                                        <input type="hidden" name="role" value="<%= role %>">
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
                                     </form>
                                 </td>
@@ -220,7 +199,11 @@
         <div>
             <input type="text" name="email" value="<%= email %>" hidden/>
         </div>
-        
+
+        <div>
+            <input type="text" name="role" value="<%= role %>" hidden />
+        </div>
+    </div>      
 </body>
             
 <%- include('partials/footer') %>

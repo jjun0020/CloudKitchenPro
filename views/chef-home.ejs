@@ -1,35 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        Chef
-    </title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
 <!-- ============================================ -->
-<!--                Navigation                    -->
+<!--               Navigation Bar                 -->
 <!-- ============================================ -->
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/api/chef-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
-                Chef CloudKitchen Pro
-            </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/api/view-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">View Recipe</a>
-                <a class="nav-link" href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add Recipe</a>
-                <a class="nav-link" href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update Recipe</a>
-                <a class="nav-link" href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete Recipe</a>
-                <a class="nav-link" href="/api/recipe-integration-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">HD 1</a>
-                <a href="/api/login-34890645" class="btn" style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
-            </div>
-        </div>
-    </nav>
+<%- include('partials/shared', { home, navBarColor, userId, email, fullName, role, invNav}) %>
 
 <!-- ============================================ -->
 <!--                Hero Section                  -->
@@ -41,6 +14,11 @@
         <p class="lead fw-bold">Welcome Chef <%= fullName %>!</p>
         <p class="lead fw-bold"> <%= email %>!</p>
     </div>
+<!-- ============================================ -->
+<!--                  My Recipe                   -->
+<!-- ============================================ -->
+
+
 
 <!-- ============================================ -->
 <!--       Display Total Chef and Recipe          -->
@@ -90,5 +68,5 @@
         <input type="text" name="email" value="<%= email %>" hidden />
     </div>
 
-    
-    <div class="container mt-4">
+
+<%- include('partials/footer') %>

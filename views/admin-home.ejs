@@ -1,28 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- ============================================ -->
+<!--               Navigation Bar                 -->
+<!-- ============================================ -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        Admin
-    </title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(170, 100, 236);">
-        <div class="container">
-            <a class="navbar-brand" href="/api/admin-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
-                Admin CloudKitchen Pro
-            </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="">All Recipe</a>
-                <a class="nav-link" href="">Add Recipe</a>
-                <a href="/api/login-34890645" class="btn btn-danger">Logout</a>
-            </div>
-        </div>
-    </nav>
+<%- include('partials/shared', { home, navBarColor, userId, email, fullName, role, invNav}) %>
 
 <!-- ============================================ -->
 <!--                Hero Section                  -->
@@ -77,3 +57,5 @@
         </div>
     </div>
 </div>
+
+<%- include('partials/footer') %>

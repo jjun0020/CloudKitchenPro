@@ -13,38 +13,30 @@ router.get('/api/admin-page-34890645', async function(req,res){
     const countUser = await Role.countDocuments();  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
     const countRecipe = await Recipe.countDocuments({});
     const countInventory = await Inventory.countDocuments({});
-    const email = req.query.email || null;
-    const fullName = req.query.fullName || null;
-    const userId = req.query.userId || null;
+    const { userId, email, fullName, role } = req.query; // pass in query
+    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
-    res.status(200).render('admin-home', { email, fullName, userId, countUser, countRecipe, countInventory });
+    res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navBarColor, roleName, invNav });
 });
 
 router.get('/api/chef-page-34890645',async function (req, res) {
     const countChef = await Role.countDocuments({ role: "Chef" });  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
     const countRecipe = await Recipe.countDocuments({});
     const countInventory = await Inventory.countDocuments({});
-    const email = req.query.email || null;
-    const fullName = req.query.fullName || null;
-    const userId = req.query.userId || null;
-    console.log("Email:", email);
-    console.log("FullName:", fullName);
-    console.log("UserId", userId);
-    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory });
+    const { userId, email, fullName, role } = req.query; // pass in query
+    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navBarColor, roleName, role, invNav });
 });
 
 router.get('/api/manager-page-34890645',async function (req, res) {
     const countManger = await Role.countDocuments({role: "Manager"})
     const countInventory = await Inventory.countDocuments({});
-    const email = req.query.email || null;
-    const fullName = req.query.fullName || null;
-    const userId = req.query.userId || null;
-    console.log("Email:", email);
-    console.log("FullName:", fullName);
-    console.log("UserId", userId);
-    res.status(200).render('manager-home', { email, fullName, userId, countManger, countInventory })
+    const { userId, email, fullName, role} = req.query; //  pass in query
+    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+    res.status(200).render('manager-home', {
+        email, fullName, userId, countManger, countInventory, role, home, navBarColor, roleName, invNav })
 });
 
 //This is for the admin role, they can manage all users, recipes, and inventory
@@ -126,7 +118,7 @@ router.get('/api/login-34890645', function(req,res){
 
 router.post('/loginUser', async function(req,res){
     try {
-        const {email, password,} = req.body;
+        const {email, password} = req.body;
         const user = await Role.findOne({email});
 
         if(!user){
@@ -139,11 +131,11 @@ router.post('/loginUser', async function(req,res){
         }
 
         if(user.role === 'Admin'){
-            return res.status(200).redirect(`/api/admin-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}`); //this make sure the email is pass through
+            return res.status(200).redirect(`/api/admin-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&&userId=${encodeURIComponent(user.userId)}&&role=${encodeURIComponent(user.role)}`); //this make sure the email is pass through
         } else if (user.role === 'Chef'){
-            return res.status(200).redirect(`/api/chef-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&userId=${encodeURIComponent(user.userId)}`)
+            return res.status(200).redirect(`/api/chef-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&userId=${encodeURIComponent(user.userId)}&&role=${encodeURIComponent(user.role)}`)
         } else if (user.role === 'Manager'){
-            return res.status(200).redirect(`/api/manager-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&userId=${encodeURIComponent(user.userId)}`)
+            return res.status(200).redirect(`/api/manager-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&userId=${encodeURIComponent(user.userId)}&&role=${encodeURIComponent(user.role)}`)
         } else {
             return res.redirect('/login-34890645');
         }
@@ -164,14 +156,13 @@ router.post('/loginUser', async function(req,res){
 
 router.get('/api/view-recipes-34890645', async function (req, res) {
     try {
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
+        const { userId, email, fullName, role } = req.query; // pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         console.log("userIdForViewRecipe", userId);
         console.log("emailForViewRecipe", email);
         console.log("fullNameForViewRecipe", fullName);
         const recipes = await Recipe.find({});
-        res.render('view-recipes', { recipes,userId,email,fullName });
+        res.render('view-recipes', { recipes, userId, email, role, fullName, home, navBarColor, roleName, invNav });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -179,14 +170,13 @@ router.get('/api/view-recipes-34890645', async function (req, res) {
 });
 
 //GET to the recipe page
-router.get("/api/add-recipes-34890645", async function (req, res) {
-    const userId = req.query.userId || null;
-    const email = req.query.email || null;
-    const fullName = req.query.fullName || null;
+router.get("/api/add-recipes-34890645", function(req, res) {
+    const { userId, email, fullName, role } = req.query; // pass in query
+    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
     console.log("userIdForAddRecipe", userId);
     console.log("emailForAddRecipe", email);
     console.log("fullNameForAddRecipe", fullName);
-    res.status(200).render('add-recipes', { userId, email, fullName });
+    res.status(200).render('add-recipes', { userId, email, fullName, role, home, navBarColor, roleName, invNav });
 });
 
 router.post("/addRecipe", async function (req, res) {
@@ -218,7 +208,7 @@ router.post("/addRecipe", async function (req, res) {
         await newRecipe.save();
         console.log(newRecipe);
 
-        res.status(200).redirect(`/api/view-recipes-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}`)
+        res.status(200).redirect(`/api/view-recipes-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}&&role=${req.body.role}`)
     } catch (error) {
         console.error(error);
 
@@ -240,14 +230,13 @@ router.post("/addRecipe", async function (req, res) {
 
 router.get('/api/delete-recipes-34890645', async function (req, res) {
     try {
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
+        const { userId, email, fullName, role } = req.query; // pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         console.log("userIdForViewRecipe", userId);
         console.log("emailForViewRecipe", email);
         console.log("fullNameForViewRecipe", fullName);
         const recipes = await Recipe.find({});
-        res.status(200).render('recipe-delete', { recipes, userId, email, fullName });
+        res.status(200).render('recipe-delete', { recipes, userId, email, fullName, role, home, navBarColor, roleName, invNav });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -263,8 +252,8 @@ router.post('/:id/delete', async (req, res) => {
             return res.status(404).send('Recipe not found');
         }
 
-        const { userId, email, fullName } = req.query;
-        res.status(200).redirect(`/api/view-recipes-34890645?userId=${userId}&&fullName=${fullName}&&email=${email}`);
+        const { userId, email, fullName, role} = req.query;
+        res.status(200).redirect(`/api/view-recipes-34890645?userId=${userId}&&fullName=${fullName}&&email=${email}&&role=${role}`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -274,16 +263,14 @@ router.post('/:id/delete', async (req, res) => {
 //GET edit recipe
 router.get('/:id/edit', async (req, res) => {
     try {
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
+        const { userId, email, fullName, role } = req.query; // pass in query
         const recipe = await Recipe.findById(req.params.id);
 
         console.log(recipe)
         if (!recipe) {
             return res.status(404).send('recipe not found');
         }
-        res.status(200).render('edit-recipe', { recipe, userId, email, fullName });
+        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role});
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -325,7 +312,7 @@ router.post("/:id/update", async function (req, res) {
         await updateRecipe.save();
         console.log(updateRecipe);
 
-        res.status(200).redirect(`/api/view-recipes-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}`)
+        res.status(200).redirect(`/api/view-recipes-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}&&role=${req.body.role}`)
     } catch (error) {
         console.error(error);
 
@@ -348,9 +335,8 @@ router.post("/:id/update", async function (req, res) {
 //GET update page in recipe
 router.get('/api/update-recipes-34890645',async function(req,res){
     try {
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
+        const { userId, email, fullName, role } = req.query; // pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         const recipes = await Recipe.find({})
         res.render('update-recipe', { 
             recipes, 
@@ -358,7 +344,13 @@ router.get('/api/update-recipes-34890645',async function(req,res){
             message: '', 
             userId, 
             email, 
-            fullName })
+            fullName,
+            role,
+            home,
+            navBarColor,
+            roleName,
+            invNav
+     })
     }catch(error){
         console.error(error);
         res.status(500).send('Server Error');
@@ -370,6 +362,7 @@ router.post('/updateRecipeByid',async function (req, res) {
     try {
         const recipeId = req.body.recipeId;
         const recipes = await Recipe.find({});
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(req.body.role, req.body.userId, req.body.email, req.body.fullName);
 
         if(!recipeId){
             return res.status(200).render('update-recipe', { 
@@ -378,7 +371,14 @@ router.post('/updateRecipeByid',async function (req, res) {
                 message: 'Please enter Id', 
                 userId: req.body.userId || null,
                 email: req.body.email || null, 
-                fullName: req.body.fullName || null });
+                fullName: req.body.fullName || null,
+                role: req.body.role || null,
+                home,
+                navBarColor,
+                roleName,
+                invNav
+             });
+                
         }
         const recipe = await Recipe.findOne({recipeId: recipeId}) //by recipe by id, it will display one recipe
 
@@ -389,7 +389,13 @@ router.post('/updateRecipeByid',async function (req, res) {
                 message: 'Recipe not found', 
                 userId: req.body.userId || null,
                 email: req.body.email || null,
-                fullName: req.body.fullName || null });
+                fullName: req.body.fullName || null,
+                role: req.body.role || null,
+                home,
+                navBarColor,
+                roleName,
+                invNav
+             });
         } else {
             return res.status(200).render('update-recipe', {
                 recipes,
@@ -397,7 +403,12 @@ router.post('/updateRecipeByid',async function (req, res) {
                 message: '',
                 userId: req.body.userId || null,
                 email: req.body.email || null,
-                fullName: req.body.fullName || null
+                fullName: req.body.fullName || null,
+                role: req.body.role || null,
+                home,
+                navBarColor,
+                roleName,
+                invNav
             });
         }
 
@@ -413,9 +424,8 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
     try{
         const inventories = await Inventory.find({});
         const recipes = await Recipe.find({});
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
+        const { userId, email, fullName, role } = req.query;
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         const recommendRecipe = await Recipe.aggregate([
             {
                 // join the Recipe and Inventory togethere
@@ -434,7 +444,7 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
                 }
             }
         ]);
-        res.status(200).render('recipe-integration', { recommendRecipe, userId,email, fullName, recipes, inventories })
+        res.status(200).render('recipe-integration', { recommendRecipe, userId, email, fullName, recipes, inventories, home, navBarColor, roleName, role, invNav })
     }catch(error){
         console.log(error)
         res.status(500).send("Sever Error")
@@ -450,14 +460,10 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
 
 router.get('/api/view-inventory-34890645', async function (req, res) {
     try {
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
-        console.log("userIdForViewInventory", userId);
-        console.log("emailForViewInventory", email);
-        console.log("fullNameForViewInventory", fullName);
+        const { userId, email, fullName, role } = req.query; //  pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         const inventories = await Inventory.find({});
-        res.status(200).render('view-inventory', { inventories, userId, email, fullName });
+        res.status(200).render('view-inventory', { inventories, userId, email, fullName, role, home, navBarColor, roleName, invNav });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -466,13 +472,14 @@ router.get('/api/view-inventory-34890645', async function (req, res) {
 
 // GET add inventory form
 router.get("/api/add-inventories-34890645", function (req, res) {
-    const userId = req.query.userId || null;
-    const email = req.query.email || null;
-    const fullName = req.query.fullName || null;
-    console.log("UserIdForInventory", userId);
-    console.log("emailFromAddInv", email);
-    console.log("fullNameFromAddInv", fullName);
-    res.status(200).render('add-inventory', { userId, email, fullName });
+    try {
+        const { userId, email, fullName, role } = req.query; //pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        res.status(200).render('add-inventory', { userId, email, fullName, role, home, navBarColor, roleName, invNav });
+    } catch(error){
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
 });
 
 // POST create new inventory
@@ -500,7 +507,7 @@ router.post("/addInventory", async function(req,res){
         });
 
         await newInventory.save();
-        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}`);
+        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}&&role=${req.body.role}`);
     } catch (error) {
         console.error(error);
 
@@ -523,15 +530,14 @@ router.post("/addInventory", async function(req,res){
 // GET edit inventory form
 router.get('/inventories/:id/edit', async (req, res) => {
     try {
-        const userId = req.query.userId || null;
-        const email = req.query.email || null;
-        const fullName = req.query.fullName || null;
+        const { userId, email, fullName, role } = req.query; //pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         const inventory = await Inventory.findById(req.params.id);
 
         if (!inventory) {
             return res.status(404).send('Inventory in edit not found');
         }
-        res.status(200).render('edit-inventory', { inventory, userId, email, fullName });
+        res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, invNav,roleName,navBarColor, home });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -574,7 +580,7 @@ router.post("/inventories/:id/update", async function (req, res) {
             return res.status(404).send('Inventory in update not found');
         }
 
-        res.status(200).redirect(`/api/view-inventory-34890645?userId=${aRole.userId}&&email=${aRole.email}&&fullName=${aRole.fullName}`);
+        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&email=${req.body.email}&&fullName=${req.body.fullName}&&role=${req.body.role}`);
     } catch (error) {
         console.error(error);
 
@@ -603,7 +609,7 @@ router.post('/inventories/:id/delete', async (req, res) => {
             return res.status(404).send('Inventory in delete not found');
         }
 
-        res.status(200).redirect('/api/view-inventory-34890645');
+        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&email=${req.body.email}&&fullName=${req.body.fullName}&&role=${req.body.role}`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -612,6 +618,7 @@ router.post('/inventories/:id/delete', async (req, res) => {
 
 module.exports = router;
     
+//This function is for spliting the word,quantity and unit in the recipe ingredients
 function splitWord(input) {
     const units = ["kg", "g", "liters", "ml", "cups", "tbsp", "tsp", "pieces", "dozen"]; // unit
     input = input.trim(); //remove the space, incase uer put it in
@@ -635,6 +642,34 @@ function splitWord(input) {
         itemQuantity: quantity,
         itemUnit: unit
     }
+}
+
+//Because each role their own link page and their own color
+function allRoleNavBar(role, userId, email, fullName){
+    let home, navBarColor, roleName, invNav;
+    switch (role) {
+        case 'Manager':
+            home = `/api/manager-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
+            navBarColor = '#5eb572';
+            roleName = 'Manager';
+            invNav = '#5eb572';
+            break;
+        case 'Chef':
+            home = `/api/chef-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
+            navBarColor = '#273befff';
+            roleName = 'Chef';
+            invNav = '#273befff';
+            break;
+        case 'Admin':
+            home = `/api/chef-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
+            navBarColor = 'rgb(170, 100, 236)';
+            roleName = 'Admin';
+            invNav = 'rgb(170, 100, 236)';
+            break;
+        default:
+            navBarColor = '#000000'
+    }
+    return { home, navBarColor, roleName, invNav }
 }
 
 

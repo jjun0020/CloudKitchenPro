@@ -1,45 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        Chef
-    </title>
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
 <!-- ============================================ -->
-<!--                Navigation                    -->
+<!--               Navigation Bar                 -->
 <!-- ============================================ -->
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand"
-                href="/api/chef-page-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">
-                Chef CloudKitchen Pro
-            </a>
-            <div class="navbar-nav">
-                <a class="nav-link"
-                    href="/api/view-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">View
-                    Recipe</a>
-                <a class="nav-link"
-                    href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add
-                    Recipe</a>
-                <a class="nav-link"
-                    href="/api/update-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Update Recipe</a>
-                <a class="nav-link"
-                    href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Delete Recipe</a>
-                <a class="nav-link"
-                    href="/api/recipe-integration-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">HD 1</a>
-
-                <a href="/api/login-34890645" class="btn"
-                    style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
-            </div>
-        </div>
-    </nav>
+<%- include('partials/shared', { home, navBarColor, userId, email, fullName, role, invNav}) %>
     <div class="container mt-4">
 
 <!-- ============================================ -->
@@ -49,14 +12,14 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>All Recipe</h2>
         <div class="d-flex gap-2">
-        <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>" class="btn btn-success">+ Add New Recipe</a>
-        <a href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>" class="btn" style = "background-color: rgb(237, 26, 26); color: white;">- Delete Recipe</a>
+        <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>" class="btn btn-success">+ Add New Recipe</a>
+        <a href="/api/delete-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>" class="btn" style = "background-color: rgb(237, 26, 26); color: white;">- Delete Recipe</a>
     </div>
     </div>
 
     <% if (recipes.length===0) { %>
         <div class="alert alert-info">
-            No Recipe found. <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>">Add the first recipe</a>
+            No Recipe found. <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>">Add the first recipe</a>
         </div>
         <% } else { %>
             <div class="table-responsive">
@@ -153,6 +116,10 @@
         
         <div>
             <input type="text" name="email" value="<%= email %>" hidden />
+        </div>
+
+        <div>
+            <input type="text" name="role" value="<%= role %>" hidden />
         </div>
     </body>
 <%- include('partials/footer') %>
