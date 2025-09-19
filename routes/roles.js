@@ -21,13 +21,24 @@ router.get('/api/admin-page-34890645', async function(req,res){
     res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navBarColor, roleName, invNav });
 });
 
+// This is displaying the chef page, in the here section will diplay their email and fullName
+// and their created recipe, diaplay ingredient
 router.get('/api/chef-page-34890645',async function (req, res) {
     const countChef = await Role.countDocuments({ role: "Chef" });  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
     const countRecipe = await Recipe.countDocuments({});
     const countInventory = await Inventory.countDocuments({});
     const { userId, email, fullName, role } = req.query; // pass in query
     const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
-    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navBarColor, roleName, role, invNav });
+    let aRole = await Role.findOne({userId});
+    if (!aRole){
+        return res.status(400).send("Invalid user for the chef page");
+    }
+    console.log("aRole", aRole)
+    const chefOwnRecipe = await Recipe.find({userId: aRole._id}); //this is the objectId of the current chef
+    console.log("chefOwnRecipe",chefOwnRecipe)
+    const sharedInventory = await Inventory.find({})
+    console.log("sharedInventory",sharedInventory)
+    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navBarColor, roleName, role, invNav, chefOwnRecipe, sharedInventory });
 });
 
 router.get('/api/manager-page-34890645',async function (req, res) {
@@ -37,17 +48,6 @@ router.get('/api/manager-page-34890645',async function (req, res) {
     const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
     res.status(200).render('manager-home', {
         email, fullName, userId, countManger, countInventory, role, home, navBarColor, roleName, invNav })
-});
-
-//This is for the admin role, they can manage all users, recipes, and inventory
-router.get('/', async function(req,res){
-    try {
-        const roles = await Role.find({});
-        res.render('roles', { roles });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
 });
 
 //This is to show the registration form add-role.ejs
@@ -161,8 +161,22 @@ router.get('/api/view-recipes-34890645', async function (req, res) {
         console.log("userIdForViewRecipe", userId);
         console.log("emailForViewRecipe", email);
         console.log("fullNameForViewRecipe", fullName);
-        const recipes = await Recipe.find({});
-        res.render('view-recipes', { recipes, userId, email, role, fullName, home, navBarColor, roleName, invNav });
+
+        //This is for the chef own recipe
+        let aRole = await Role.findOne({ userId });
+        if (!aRole) {
+            return res.status(400).send("Invalid user for the chef page");
+        }
+        console.log("aRole", aRole)
+        const chefOwnRecipe = await Recipe.find({ userId: aRole._id }); //this is the objectId of the current chef
+        console.log("chefOwnRecipe", chefOwnRecipe)
+
+        //This will other other chef recipe, except their own
+        const otherRecipes = await Recipe.find({
+            userId: { $ne: aRole._id }  //ne is for not equal reference: https://www.mongodb.com/docs/manual/reference/operator/query/ne/
+        }).populate('userId') // populate tells to recplace the ObjectId in userId with all of the data
+
+        res.render('view-recipes', { otherRecipes, userId, email, role, fullName, home, navBarColor, roleName, invNav, chefOwnRecipe });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -185,7 +199,7 @@ router.post("/addRecipe", async function (req, res) {
         let aRole = await Role.findOne({ userId: req.body.userId});
         console.log(aRole)
         if (!aRole) {
-            return res.status(400).send("Invalid user/role ID"); // stop here if not found
+            return res.status(400).send("Invalid user"); // stop here if not found
         }
         const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
         const instructionsSpilt = instructions.split(/,|\n/);
@@ -235,8 +249,16 @@ router.get('/api/delete-recipes-34890645', async function (req, res) {
         console.log("userIdForViewRecipe", userId);
         console.log("emailForViewRecipe", email);
         console.log("fullNameForViewRecipe", fullName);
-        const recipes = await Recipe.find({});
-        res.status(200).render('recipe-delete', { recipes, userId, email, fullName, role, home, navBarColor, roleName, invNav });
+
+        //This is for the chef own recipe
+        let aRole = await Role.findOne({ userId });
+        if (!aRole) {
+            return res.status(400).send("Invalid user for the chef page");
+        }
+        console.log("aRole", aRole)
+        const chefOwnRecipe = await Recipe.find({ userId: aRole._id }); //this is the objectId of the current chef
+        console.log("chefOwnRecipe", chefOwnRecipe)
+        res.status(200).render('recipe-delete', { chefOwnRecipe, userId, email, fullName, role, home, navBarColor, roleName, invNav });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -396,6 +418,28 @@ router.post('/updateRecipeByid',async function (req, res) {
                 roleName,
                 invNav
              });
+        } 
+
+        let aRole = await Role.findOne({userId: req.body.userId });
+        if (!aRole) {
+            return res.status(400).send("Invalid user for the update recipe page");
+        }
+        
+        // if the userId in the recipe does not match the ObjectId in the role
+        if(!recipe.userId.includes(aRole._id)){
+            return res.status(200).render('update-recipe', {
+                recipes,
+                recipe: null, 
+                message: 'You are not the owner of this recipe',
+                userId: req.body.userId || null,
+                email: req.body.email || null,
+                fullName: req.body.fullName || null,
+                role: req.body.role || null,
+                home,
+                navBarColor,
+                roleName,
+                invNav
+            });
         } else {
             return res.status(200).render('update-recipe', {
                 recipes,
@@ -416,7 +460,7 @@ router.post('/updateRecipeByid',async function (req, res) {
         console.error(error);
         res.status(500).send('Server Error');
     }
-})
+});
 
 //HD Task 1
 //recipe integration 
@@ -661,7 +705,7 @@ function allRoleNavBar(role, userId, email, fullName){
             invNav = '#273befff';
             break;
         case 'Admin':
-            home = `/api/chef-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
+            home = `/api/admin-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
             navBarColor = 'rgb(170, 100, 236)';
             roleName = 'Admin';
             invNav = 'rgb(170, 100, 236)';

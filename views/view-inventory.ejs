@@ -125,20 +125,22 @@
                     </tr>
                 </thead>
                 <tbody>
+                <% let expiring = false; %>
                 <% for (let i=0; i < inventories.length; i++){
                     const currentDate = new Date();
                     const expirationDate = new Date(inventories[i].expirationDate);
                     const dayDifferent = expirationDate - currentDate;
                     const dayLeft = Math.ceil(dayDifferent / (1000 * 60 * 60 * 24))
 
-                    if(dayLeft <=3){ %>
+                    if(dayLeft <=3){ 
+                        expiring = true;%>
                         <tr class = "<%= dayLeft <= 0? 'table-danger' : 'table-warning' %>">
                             <td><%= inventories[i].ingredientName%></td>
                             <td><%= inventories[i].quantity%></td>
                             <td><%= inventories[i].location%></td>
                             <td><%= inventories[i].expirationDate.toISOString().split('T')[0]%></td>
                             <td>
-                                <% if(dayLeft==0 ){ %>
+                                <% if(dayLeft== 0 ){ %>
                                     <p>Expired</p>
                                 <%} else if(dayLeft <=3){ %>
                                     <p><%= dayLeft%></p>
@@ -149,6 +151,9 @@
                 }%>
                 </tbody>
             </table>
+            <% if(!expiring) { %>
+                <p class="text-center" style="color: red; font-weight: bold;">No ingredient will Expired in 3 days</p>
+                <%} %>
         </div> 
         </div>
 
@@ -171,9 +176,11 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <% let lowStock = false; %>
                     <% for (let i=0; i < inventories.length; i++){
                         if(inventories[i].quantity < inventories[i].stock){
                             let suggestion = inventories[i].stock - inventories[i].quantity;
+                            lowStock = true;
                     %>
                             <tr>
                                 <td><%= inventories[i].ingredientName%></td>
@@ -186,6 +193,9 @@
                     } %>
                 </tbody>
             </table>
+            <% if(!lowStock){ %>
+                <p class="text-center" style="color: red; font-weight: bold;">No low stock</p>
+            <% } %>
         </div>
 
         <div>

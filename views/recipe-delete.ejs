@@ -15,11 +15,11 @@
 <!-- ============================================ -->
 <!--                Delete Recipe                 -->
 <!-- ============================================ -->
-    <% if (recipes.length===0) { %>
+    <% if (chefOwnRecipe.length===0) { %>
         <div class="alert alert-info">
             No Ingredient found. <a
                 href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>">Add the
-                first ingredient</a>
+                first recipe</a>
         </div>
         <% } else { %>
             <div class="table-responsive">
@@ -41,7 +41,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% recipes.forEach(recipe=> { %>
+                        <% chefOwnRecipe.forEach(recipe=> { %>
                             <tr>
                                 <td>
                                     <%= recipe.recipeId %>
