@@ -1,0 +1,105 @@
+<!-- ============================================ -->
+<!--               Navigation Bar                 -->
+<!-- ============================================ -->
+
+<%- include('partials/shared', { home, navigationBarColor, userId, email, fullName, role, titleColor}) %>
+
+<!-- ============================================ -->
+<!--               Filter Recipe                  -->
+<!-- ============================================ -->
+
+<h1 class="text-center">Filter recipe</h1>
+<form action="/api/filter-recipe-34890645" method = "GET">
+    <div style="margin-left: 70vh;">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Cuisine Type:</label>
+                    <select class="form-control" name="cuisineType" required>
+                        <option value="">Select a role</option>
+                        <option value="Italian" <%= cuisineType==='Italian' ?'selected' : '' %>>Italian</option>
+                        <option value="Asian" <%= cuisineType==='Asian' ?'selected' : '' %>>Asian</option>
+                        <option value="Mexican" <%= cuisineType==='Mexican' ?'selected' : '' %>>Mexican</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Difficulty:</label>
+                    <select class="form-control" name="difficulty" required>
+                        <option value="">Select a role</option>
+                        <option value="Easy" <%= difficulty==='Easy' ?'selected' : '' %>>Easy</option>
+                        <option value="Medium" <%= difficulty==='Medium' ?'selected' : '' %>>Medium</option>
+                        <option value="Hard" <%= difficulty==='Hard' ?'selected' : '' %>>Hard</option>
+                    </select>
+                </div>
+            </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">Prep Time:</label>
+                    <input type="number" class="form-control" name="prepTime" min="1" max="480" required
+                        value="<%=prepTime %>">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Filter Recipe</button>
+            <a href="" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+
+    <div>
+        <input type="text" name="userId" value="<%= userId %>" hidden />
+    </div>
+    <div>
+        <input type="text" name="fullName" value="<%= fullName %>" hidden />
+    </div>
+    
+    <div>
+        <input type="text" name="email" value="<%= email %>" hidden />
+    </div>
+    
+    <div>
+        <input type="text" name="role" value="<%= role %>" hidden />
+    </div>
+</form>
+</div>
+
+<!-- ============================================ -->
+<!--                    Result                    -->
+<!-- ============================================ -->
+ 
+<h2 class ="text-center">Result: </h2>
+<div class="d-flex gap-2 justify-content-center gap-4 my-4">
+    <% if (filterRecipe.length===0){ %>
+        <p class="text-center" style="color: red; background-color: rgb(233, 141, 141); padding: 5px;">No added
+            ingrdient <a
+                href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>">Add
+                the
+                first ingredient here</a></p>
+        <%} else { %>
+            <% filterRecipe.forEach(item=> { %>
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <%= item.title%>
+                        </h2>
+                        <p>Chef: <%= item.chef %>
+                        </p>
+                        <p>Cuisine Type: <%= item.cuisineType %>
+                        </p>
+                        <p>Difficulty: <%= item.difficulty %>
+                        </p>
+                        <p>PrepTime: <%= item.prepTime %>
+                        </p>
+                    </div>
+                </div>
+                <% }) %>
+                    <%} %>
+<%- include('partials/footer') %>

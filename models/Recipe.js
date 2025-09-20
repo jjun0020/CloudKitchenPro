@@ -89,8 +89,8 @@ const recipeSchema = new mongoose.Schema({
     },
     prepTime: {
         type: Number,
-        minlength: [1, 'Prep time must be at least 1 min'],
-        maxlength: [480, 'Prep time cannot exceed 480 min'],
+        min: [1, 'Prep time must be at least 1 min'],
+        max: [480, 'Prep time cannot exceed 480 min'],
     },
     difficulty: {
         type: String,
@@ -102,8 +102,8 @@ const recipeSchema = new mongoose.Schema({
     },
     servings: {
         type: Number,
-        minlength: [1, 'servings must be at least '],
-        maxlength: [20, 'servings cannot exceed 20'],
+        min: [1, 'servings must be at least '],
+        max: [20, 'servings cannot exceed 20'],
     },
     createdDate: {
         type: Date,

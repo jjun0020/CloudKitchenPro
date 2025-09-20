@@ -2,7 +2,7 @@
 <!--               Navigation Bar                 -->
 <!-- ============================================ -->
 
-<%- include('partials/shared', { home, navBarColor, userId, email, fullName, role, invNav}) %>
+<%- include('partials/shared', { home, navigationBarColor, userId, email, fullName, role, titleColor}) %>
 
 <!-- ============================================ -->
 <!--                Hero Section                  -->
@@ -57,22 +57,22 @@
 <!-- ============================================ -->
     <h2 class="text-center" style="background-color: rgba(52, 52, 220, 0.837); color: white; padding: 10px;">📖My Recipes</h2>
     <div class="d-flex gap-2 justify-content-center gap-4 my-4">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
             <% if (chefOwnRecipe.length === 0) { %>
                 <p class="text-center" style="color: red; background-color: rgb(233, 141, 141); padding: 5px;">No added recipe <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>">Add
                     first recipe here</a></p>
 
             <%} else { %>
                 <% chefOwnRecipe.forEach(recipe => { %>
-                    <h2 class="card-title"><%= recipe.title%></h2>
-                    <p>Chef: <%= recipe.chef%></p>
-                    <p>Difficulty: <%= recipe.difficulty%></p>
-                    <p>Servings: <%= recipe.servings%></p>
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h2 class="card-title"><%= recipe.title%></h2>
+                            <p>Chef: <%= recipe.chef%></p>
+                            <p>Difficulty: <%= recipe.difficulty%></p>
+                            <p>Servings: <%= recipe.servings%></p>
+                        </div>
+                    </div>
                 <% }) %>
-            <%} %>
-            </div>
-        </div>
+            <%} %>               
     </div>
     
 <!-- ============================================ -->
@@ -80,23 +80,23 @@
 <!-- ============================================ -->
     <h2 class="text-center" style="background-color: rgba(109, 234, 115, 0.837); color: white; padding: 10px;">Current Inventory</h2>
     <div class="d-flex gap-2 justify-content-center gap-4 my-4">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
                 <% if (sharedInventory.length === 0){ %>
                     <p class="text-center" style="color: red; background-color: rgb(233, 141, 141); padding: 5px;">No added ingrdient <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>">Add the
                     first ingredient here</a></p>
                 <%} else { %>
                     <% sharedInventory.forEach(inventory => { %>
-                        <h2 class="card-title">
-                            <%= inventory.ingredientName%>
-                        </h2>
-                        <p>Quantity: <%= inventory.quantity %></p>
-                        <p>Stock: <%= inventory.stock %></p>
-                        <p>Cost: <%= inventory.cost %></p>
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h2 class="card-title">
+                                    <%= inventory.ingredientName%>
+                                </h2>
+                                <p>Quantity: <%= inventory.quantity %></p>
+                                <p>Stock: <%= inventory.stock %></p>
+                                <p>Cost: <%= inventory.cost %></p>
+                            </div>
+                        </div>
                     <% }) %>
                 <%} %>
-            </div>
-        </div>
     </div>
 
     

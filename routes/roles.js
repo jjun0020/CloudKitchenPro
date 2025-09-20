@@ -14,11 +14,11 @@ router.get('/api/admin-page-34890645', async function(req,res){
     const countRecipe = await Recipe.countDocuments({});
     const countInventory = await Inventory.countDocuments({});
     const { userId, email, fullName, role } = req.query; // pass in query
-    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
-    res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navBarColor, roleName, invNav });
+    res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navigationBarColor, roleName, titleColor });
 });
 
 // This is displaying the chef page, in the here section will diplay their email and fullName
@@ -28,7 +28,7 @@ router.get('/api/chef-page-34890645',async function (req, res) {
     const countRecipe = await Recipe.countDocuments({});
     const countInventory = await Inventory.countDocuments({});
     const { userId, email, fullName, role } = req.query; // pass in query
-    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
     let aRole = await Role.findOne({userId});
     if (!aRole){
         return res.status(400).send("Invalid user for the chef page");
@@ -38,16 +38,16 @@ router.get('/api/chef-page-34890645',async function (req, res) {
     console.log("chefOwnRecipe",chefOwnRecipe)
     const sharedInventory = await Inventory.find({})
     console.log("sharedInventory",sharedInventory)
-    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navBarColor, roleName, role, invNav, chefOwnRecipe, sharedInventory });
+    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navigationBarColor, roleName, role, titleColor, chefOwnRecipe, sharedInventory });
 });
 
 router.get('/api/manager-page-34890645',async function (req, res) {
     const countManger = await Role.countDocuments({role: "Manager"})
     const countInventory = await Inventory.countDocuments({});
     const { userId, email, fullName, role} = req.query; //  pass in query
-    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
     res.status(200).render('manager-home', {
-        email, fullName, userId, countManger, countInventory, role, home, navBarColor, roleName, invNav })
+        email, fullName, userId, countManger, countInventory, role, home, navigationBarColor, roleName, titleColor })
 });
 
 //This is to show the registration form add-role.ejs
@@ -148,7 +148,6 @@ router.post('/loginUser', async function(req,res){
 });
 
 
-
 ///////////////////////////////
 //         RECIPE           //
 //////////////////////////////
@@ -157,7 +156,7 @@ router.post('/loginUser', async function(req,res){
 router.get('/api/view-recipes-34890645', async function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; // pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
         console.log("userIdForViewRecipe", userId);
         console.log("emailForViewRecipe", email);
         console.log("fullNameForViewRecipe", fullName);
@@ -176,7 +175,7 @@ router.get('/api/view-recipes-34890645', async function (req, res) {
             userId: { $ne: aRole._id }  //ne is for not equal reference: https://www.mongodb.com/docs/manual/reference/operator/query/ne/
         }).populate('userId') // populate tells to recplace the ObjectId in userId with all of the data
 
-        res.render('view-recipes', { otherRecipes, userId, email, role, fullName, home, navBarColor, roleName, invNav, chefOwnRecipe });
+        res.render('view-recipes', { otherRecipes, userId, email, role, fullName, home, navigationBarColor, roleName, titleColor, chefOwnRecipe });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -186,11 +185,11 @@ router.get('/api/view-recipes-34890645', async function (req, res) {
 //GET to the recipe page
 router.get("/api/add-recipes-34890645", function(req, res) {
     const { userId, email, fullName, role } = req.query; // pass in query
-    const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
     console.log("userIdForAddRecipe", userId);
     console.log("emailForAddRecipe", email);
     console.log("fullNameForAddRecipe", fullName);
-    res.status(200).render('add-recipes', { userId, email, fullName, role, home, navBarColor, roleName, invNav });
+    res.status(200).render('add-recipes', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor });
 });
 
 router.post("/addRecipe", async function (req, res) {
@@ -244,7 +243,7 @@ router.post("/addRecipe", async function (req, res) {
 router.get('/api/delete-recipes-34890645', async function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; // pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
         console.log("userIdForViewRecipe", userId);
         console.log("emailForViewRecipe", email);
         console.log("fullNameForViewRecipe", fullName);
@@ -257,7 +256,7 @@ router.get('/api/delete-recipes-34890645', async function (req, res) {
         console.log("aRole", aRole)
         const chefOwnRecipe = await Recipe.find({ userId: aRole._id }); //this is the objectId of the current chef
         console.log("chefOwnRecipe", chefOwnRecipe)
-        res.status(200).render('recipe-delete', { chefOwnRecipe, userId, email, fullName, role, home, navBarColor, roleName, invNav });
+        res.status(200).render('recipe-delete', { chefOwnRecipe, userId, email, fullName, role, home, navigationBarColor, roleName, titleColor });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -286,7 +285,7 @@ router.get('/:id/edit', async (req, res) => {
     try {
         const { userId, email, fullName, role } = req.query; // pass in query
 
-        const { home, navBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
         
         const recipe = await Recipe.findById(req.params.id);
 
@@ -294,7 +293,7 @@ router.get('/:id/edit', async (req, res) => {
         if (!recipe) {
             return res.status(404).send('recipe not found in edit id');
         }
-        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message:'', error: '', home,navBarColor, roleName});
+        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: '', home, navigationBarColor, roleName});
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -304,7 +303,7 @@ router.get('/:id/edit', async (req, res) => {
 
 router.post("/:id/update", async function (req, res) {
     const { userId, email, fullName, role } = req.body;
-    const { home, navBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
+    const { home, navigationBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
     let recipe;
     try {
         recipe = await Recipe.findById(req.params.id);
@@ -338,9 +337,9 @@ router.post("/:id/update", async function (req, res) {
     );
 
      if (!updateRecipe) {
-         return res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: 'Update failed', home, navBarColor, roleName })
+         return res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: 'Update failed', home, navigationBarColor, roleName })
      } 
-        return res.status(200).render('edit-recipe', { recipe: updateRecipe, userId, email, fullName, role, message: 'Update successful', error: '', home, navBarColor, roleName })
+        return res.status(200).render('edit-recipe', { recipe: updateRecipe, userId, email, fullName, role, message: 'Update successful', error: '', home, navigationBarColor, roleName })
      
         
     } catch (error) {
@@ -359,7 +358,7 @@ router.post("/:id/update", async function (req, res) {
             errorMessage =`${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
         }
 
-        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: errorMessage, home, navBarColor, roleName });
+        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: errorMessage, home, navigationBarColor, roleName });
         
     }
 });
@@ -368,7 +367,7 @@ router.post("/:id/update", async function (req, res) {
 router.get('/api/update-recipes-34890645',async function(req,res){
     try {
         const { userId, email, fullName, role } = req.query; // pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
         const recipes = await Recipe.find({})
         res.render('update-recipe', { 
             recipes, 
@@ -379,9 +378,9 @@ router.get('/api/update-recipes-34890645',async function(req,res){
             fullName,
             role,
             home,
-            navBarColor,
+            navigationBarColor,
             roleName,
-            invNav
+            titleColor
      })
     }catch(error){
         console.error(error);
@@ -394,7 +393,7 @@ router.post('/updateRecipeByid',async function (req, res) {
     try {
         const recipeId = req.body.recipeId;
         const recipes = await Recipe.find({});
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(req.body.role, req.body.userId, req.body.email, req.body.fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(req.body.role, req.body.userId, req.body.email, req.body.fullName);
 
         if(!recipeId){
             return res.status(200).render('update-recipe', { 
@@ -406,9 +405,9 @@ router.post('/updateRecipeByid',async function (req, res) {
                 fullName: req.body.fullName || null,
                 role: req.body.role || null,
                 home,
-                navBarColor,
+                navigationBarColor,
                 roleName,
-                invNav
+                titleColor
              });
                 
         }
@@ -424,9 +423,9 @@ router.post('/updateRecipeByid',async function (req, res) {
                 fullName: req.body.fullName || null,
                 role: req.body.role || null,
                 home,
-                navBarColor,
+                navigationBarColor,
                 roleName,
-                invNav
+                titleColor
              });
         } 
 
@@ -446,9 +445,9 @@ router.post('/updateRecipeByid',async function (req, res) {
                 fullName: req.body.fullName || null,
                 role: req.body.role || null,
                 home,
-                navBarColor,
+                navigationBarColor,
                 roleName,
-                invNav
+                titleColor
             });
         } else {
             return res.status(200).render('update-recipe', {
@@ -460,9 +459,9 @@ router.post('/updateRecipeByid',async function (req, res) {
                 fullName: req.body.fullName || null,
                 role: req.body.role || null,
                 home,
-                navBarColor,
+                navigationBarColor,
                 roleName,
-                invNav
+                titleColor
             });
         }
 
@@ -479,7 +478,7 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
         const inventories = await Inventory.find({});
         const recipes = await Recipe.find({});
         const { userId, email, fullName, role } = req.query;
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
         const recommendRecipe = await Recipe.aggregate([
             {
                 // join the Recipe and Inventory togethere
@@ -498,14 +497,12 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
                 }
             }
         ]);
-        res.status(200).render('recipe-integration', { recommendRecipe, userId, email, fullName, recipes, inventories, home, navBarColor, roleName, role, invNav })
+        res.status(200).render('recipe-integration', { recommendRecipe, userId, email, fullName, recipes, inventories, home, navigationBarColor, roleName, role, titleColor })
     }catch(error){
         console.log(error)
         res.status(500).send("Sever Error")
     }
 });
-
-
 
 
 ///////////////////////////////
@@ -515,7 +512,7 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
 router.get('/api/view-inventory-34890645', async function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; //  pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
         const inventories = await Inventory.find({});
 
         const totalValueAggregate = await Inventory.aggregate([
@@ -534,7 +531,7 @@ router.get('/api/view-inventory-34890645', async function (req, res) {
         // [0] first and only element of the array, need the zero because aggregate always return an array
         const totalValue = Number(totalValueAggregate[0]?.totalInventoryValue || 0);
         console.log(totalValue)
-        res.status(200).render('view-inventory', { inventories, userId, email, fullName, role, home, navBarColor, roleName, invNav, totalValue });
+        res.status(200).render('view-inventory', { inventories, userId, email, fullName, role, home, navigationBarColor, roleName, titleColor, totalValue });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -545,8 +542,8 @@ router.get('/api/view-inventory-34890645', async function (req, res) {
 router.get("/api/add-inventories-34890645", function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; //pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
-        res.status(200).render('add-inventory', { userId, email, fullName, role, home, navBarColor, roleName, invNav });
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+        res.status(200).render('add-inventory', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor });
     } catch(error){
         console.error(error);
         res.status(500).send('Server Error');
@@ -603,7 +600,7 @@ router.get('/inventories/:id/edit', async (req, res) => {
     try {
         const { userId, email, fullName, role } = req.query; //pass in query
 
-        const { home, navBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
 
         const inventory = await Inventory.findById(req.params.id);
 
@@ -611,7 +608,7 @@ router.get('/inventories/:id/edit', async (req, res) => {
         if (!inventory) {
             return res.status(404).send('Inventory in edit not found');
         }
-        res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: '' });
+        res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: '', error: '' });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -620,7 +617,7 @@ router.get('/inventories/:id/edit', async (req, res) => {
 
 router.post("/inventories/:id/update", async function (req, res) {
     const { userId, email, fullName, role } = req.body;
-    const { home, roleName, navBarColor } = allRoleNavBar(role, userId, email, fullName);
+    const { home, roleName, navigationBarColor } = allRoleNavBar(role, userId, email, fullName);
     let inventory;
     try {
         inventory = await Inventory.findById(req.params.id)
@@ -633,7 +630,7 @@ router.post("/inventories/:id/update", async function (req, res) {
         const duplicateName = await Inventory.findOne({ingredientName: ingredientName})
 
         if(duplicateName){
-            return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: 'IngredientName already exist' })
+            return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: '', error: 'IngredientName already exist' })
         }
                 const updateInventory = await Inventory.findByIdAndUpdate(
                     req.params.id,
@@ -658,9 +655,9 @@ router.post("/inventories/:id/update", async function (req, res) {
             );
 
         if (!updateInventory) {
-            return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: 'Update Fail' })
+            return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: '', error: 'Update Fail' })
         }
-            return res.status(200).render("edit-inventory", { inventory: updateInventory, userId, email, fullName, role, roleName, navBarColor, home, message: 'Update Successfully', error: '' });
+        return res.status(200).render("edit-inventory", { inventory: updateInventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: 'Update Successfully', error: '' });
 
     } catch (error) {
 
@@ -679,7 +676,7 @@ router.post("/inventories/:id/update", async function (req, res) {
             errorMessage = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
         }
 
-        res.status(200).render("edit-inventory", { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: errorMessage, home, navBarColor, roleName })
+        res.status(200).render("edit-inventory", { inventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: '', error: errorMessage})
     }
 });
 
@@ -703,36 +700,163 @@ router.post('/inventories/:id/delete', async (req, res) => {
 ///////////////////////////////
 //         REPORT           //
 //////////////////////////////
+//HD Task 3
 router.get('/api/report-34890645', async function(req,res){
     try {
         const { userId, email, fullName, role } = req.query; //pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
 
-        // track the most View
-        const mostView = await Recipe.aggregate([
-            {$sort: {view: - 1}}, // Order the most view(-1) to least view
-            {$project: {title: 1, views: 1}} // the title is for display the name of the recipe and the views of that recipe
-        ]);
-
-        //track most created
-        const mostCreated = await Recipe.aggregate([
+        //2. Ingredient Usage Analysis - aggregate across all recipes to identify most commonly used ingredients and cost analysis
+        const mostUseIngredient = await Recipe.aggregate([
+            {$unwind: '$ingredients'}, //need to flatten it so that we can count ingredients indivisually, so one document per ingredient
             {
                 $group: {
-                    _id: '$userId', //group all recipes done by this ObjectId and store in _id
-                    totalRecipeMade: {$sum: 1}
+                    _id: "$ingredients.itemName",
+                    count: {$sum: 1}
                 }
-            },
-            {$sort: {totalRecipeMade: -1}},
-            {$project: {userId: '$_id', totalRecipeMade: 1, _id: 0 }}
+            },{
+                $lookup : { // find the ingredient from the recipe to match the inventory ingredient
+                    from: "inventories",
+                    localField: '_id',
+                    foreignField: 'ingredientName',
+                    as: 'matchName'
+                }
+            },{
+                $unwind: '$matchName'
+            },{
+                $project: {
+                    ingredient: '$_id',
+                    count: 1,
+                    cost: '$matchName.cost',
+                    _id: 0
+                }
+            },{$sort: {count: -1}}
         ]);
 
-        res.status(200).render('report', { userId, email, fullName, role, home, navBarColor, roleName, invNav });
+        //1.Recipe Performance Analytics - most created using aggregation pipelines
+        const totalRecipe = await Recipe.aggregate([
+            {
+                $group: {
+                    _id: "$userId", 
+                    totalRecipes: { $sum: 1 }
+                }
+            },{
+                $lookup: {
+                    from: 'roles', // look up from role
+                    localField: '_id', // this will be from the group
+                    foreignField: '_id', // this _id matach from the role
+                    as: 'chef' // an array where both of _id match togetheer
+                }
+            },{
+                $unwind: '$chef' // since lookup produces an array, unwind flattens into a single object, get rid of the array
+            },{
+                $project: {
+                    chefName: "$chef.fullName", // pull the fullName from the roles
+                    totalRecipes: 1, // keeps the count
+                    _id: 0  //removes the default _id from the ouput
+                }
+            },
+            {$sort: {totalRecipes: -1 }} // this will display from the highest
+
+        ]);
+
+        // 3. User Recipe Insights - generate reports showing recipe creation patterns by chef, difficulty distribution, cuisine preferences
+        const difficultyDistribution = await Recipe.aggregate([
+            {
+                $group: {
+                    _id: '$difficulty',//group all the recipes that have the same difficulty
+                    count: {$sum: 1}, // for each range of difficulty, count how many recipe are in there
+                    recipes: { $push: '$title' } // push recipe title into the array
+                }
+            },{
+                $project: {
+                    difficulty: "$_id",
+                    count: 1, //include the title of the recipe
+                    recipes: 1,
+                    _id: 0 
+                }
+            },
+            {$sort: {count: -1}}
+        ]);
+
+        const cuisinePreferences = await Recipe.aggregate([
+            {
+                $group: {
+                    _id: '$cuisineType', //MongoDB stores it in _id
+                    count: {$sum: 1},
+                    recipes: { $push: '$title' } 
+                }
+            },{
+                $project: { 
+                    cuisine: '$_id', // rename _id to cuisine
+                    count: 1,
+                    recipes: 1,
+                    _id: 0 
+                }
+            },
+            {$sort: {count: -1 }}
+        ]);
+
+        // 6.Seasonal Recipe Trends - analyze recipe creation patterns over time periods
+        const seasonal = await Recipe.aggregate([
+            {
+                $group: {
+                    _id: { //This will get the year/month/day that the recipe got created
+                        year: { $year: '$createdDate' },  //reference: https://www.mongodb.com/docs/manual/reference/operator/aggregation/year/
+                        month: {$month: '$createdDate'},
+                        day: {$dayOfMonth: '$createdDate'},
+                    },
+                    count: {$sum: 1},
+                    recipes: { $push: '$title' }
+                }
+            },{
+                $project: {
+                    _id: 0, // e.g "_id": { "year": 2025, "month": 9, "day": 21 }, count: 5 to  { "year": 2025, "month": 9, "day": 21, "count": 5 }
+                    year: '$_id.year', 
+                    month: '$_id.month',
+                    day: '$_id.day',
+                    count: 1,
+                    recipes: 1
+                }
+            },{
+                $sort: { year: 1, month: 1, day: 1 }
+            }
+        ]);
+
+        res.status(200).render('report', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor, totalRecipe, difficultyDistribution, cuisinePreferences, mostUseIngredient, seasonal });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
     }
-})
+});
 
+
+// 4.Advanced Filtering Dashboard - complex search interface with multiple simultaneous criteria (cuisine + difficulty + prep time)
+router.get('/api/filter-recipe-34890645', async function(req,res){
+    const { userId, email, fullName, role } = req.query; //pass in query
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+    try {
+        const {cuisineType, difficulty, prepTime} = req.query;
+        const match = {};
+        if(cuisineType){
+            match.cuisineType = cuisineType
+        }
+        if(difficulty){
+            match.difficulty = difficulty
+        }
+        if(prepTime){
+            match.prepTime = Number(prepTime)
+        }
+
+        const filterRecipe = await Recipe.aggregate([
+            {$match: match}
+        ])
+        res.status(200).render('filter-recipe', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor, filterRecipe,cuisineType,difficulty,prepTime});
+    } catch(error){
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
 
 
 module.exports = router;
@@ -761,34 +885,34 @@ function splitWord(input) {
         itemQuantity: quantity,
         itemUnit: unit
     }
-}
+};
 
 //Because each role their own link page and their own color
 function allRoleNavBar(role, userId, email, fullName){
-    let home, navBarColor, roleName, invNav;
+    let home, navigationBarColor, roleName, titleColor;
     switch (role) {
         case 'Manager':
             home = `/api/manager-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
-            navBarColor = '#5eb572';
+            navigationBarColor = '#5eb572';
             roleName = 'Manager';
-            invNav = '#5eb572';
+            titleColor = '#5eb572';
             break;
         case 'Chef':
             home = `/api/chef-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
-            navBarColor = '#273befff';
+            navigationBarColor = '#273befff';
             roleName = 'Chef';
-            invNav = '#273befff';
+            titleColor = '#273befff';
             break;
         case 'Admin':
             home = `/api/admin-page-34890645?userId=${userId}&&email=${email}&&fullName=${fullName}&&role=${role}`
-            navBarColor = 'rgb(170, 100, 236)';
+            navigationBarColor = 'rgb(170, 100, 236)';
             roleName = 'Admin';
-            invNav = 'rgb(170, 100, 236)';
+            titleColor = 'rgb(170, 100, 236)';
             break;
         default:
-            navBarColor = '#000000'
+            navigationBarColor = '#000000'
     }
-    return { home, navBarColor, roleName, invNav }
+    return { home, navigationBarColor, roleName, titleColor }
 }
 
 

@@ -2,4 +2,191 @@
 <!--               Navigation Bar                 -->
 <!-- ============================================ -->
 
-<%- include('partials/shared', { home, navBarColor, userId, email, fullName, role, invNav}) %>
+<%- include('partials/shared', { home, navigationBarColor, userId, email, fullName, role, titleColor}) %>
+
+<!-- ============================================ -->
+<!--            Ingredient Usage Analysis         -->
+<!-- ============================================ -->
+<div class="container mt-4">
+    <h1>🥕Ingredient Usage Analysis</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Ingredient Name</th>
+                    <th>Ingredeint Count</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% mostUseIngredient.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.ingredient%>
+                        </td>
+                        <td>
+                            <%= item.count%>
+                        </td>
+                        <td>
+                            <%= item.cost%>
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+    </div>
+
+<!-- ============================================ -->
+<!--             User Recipe Insights             -->
+<!-- ============================================ -->
+
+    <h1>📊Chef Productivity</h1>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Chef Name</th>
+                        <th>Total Recipes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% totalRecipe.forEach(item => { %>
+                    <tr>
+                        <td><%= item.chefName%></td>
+                        <td><%= item.totalRecipes%></td>
+                    </tr>
+                    <%})%>
+                </tbody>
+            </table>
+        </div>
+
+<!-- ============================================ -->
+<!--               Cuisine Analysis               -->
+<!-- ============================================ -->
+    <h3 class="text-center">🌍Cuisine Analysis</h3>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table">
+                <tr>
+                    <th style="background-color: rgb(87, 215, 87);">Number of Recipes</th>
+                    <th style="background-color: rgb(87, 215, 87);">Recipes title</th>
+                    <th style="background-color: rgb(87, 215, 87);">Cuisine</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% cuisinePreferences.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.count%>
+                        </td>
+                        <td>
+                            <ul>
+                                <%item.recipes.forEach(recipe=> { %>
+                                    <li>
+                                        <%=recipe%>
+                                    </li>
+                                    <%})%>
+                            </ul>
+
+                        </td>
+                        <td>
+                            <%= item.cuisine%>
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+
+<!-- ============================================ -->
+<!--               Diffculty Analysis             -->
+<!-- ============================================ -->
+    <h3 class="text-center">Diffculty Analysis</h3>
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table">
+                <tr>
+                    <th style="background-color: rgb(215, 204, 87);">Number of Recipes</th>
+                    <th style="background-color:  rgb(215, 204, 87);">Recipes title</th>
+                    <th style="background-color: rgb(215, 204, 87);">Difficulty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% difficultyDistribution.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.count%>
+                        </td>
+                        <td>
+                            <ul>
+                                <%item.recipes.forEach(recipe=> { %>
+                                    <li>
+                                        <%=recipe%>
+                                    </li>
+                                    <%})%>
+                            </ul>
+    
+                        </td>
+                        <td>
+                            <%= item.difficulty%>
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+    </div>
+
+<!-- ============================================ -->
+<!--            Seasonal Recipe Trends            -->
+<!-- ============================================ -->
+    <h3 class="text-center">Diffculty Analysis</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table">
+                <tr>
+                    <th style="background-color: rgb(215, 142, 87);">Year</th>
+                    <th style="background-color:  rgb(215, 142, 87);">month</th>
+                    <th style="background-color: rgb(215, 142, 87);">day</th>
+                    <th style="background-color: rgb(215, 142, 87);">Number of Recipes</th>
+                    <th style="background-color: rgb(215, 142, 87);">Recipes title</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% seasonal.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.year%>
+                        </td>
+                        <td>
+                            <%= item.month%>
+                        </td>
+                        <td>
+                            <%= item.day%>
+                        </td>
+                        <td>
+                            <%= item.count%>
+                        </td>
+                        <td>
+                            <ul>
+                                <%item.recipes.forEach(recipe=> { %>
+                                    <li>
+                                        <%=recipe%>
+                                    </li>
+                                    <%})%>
+                            </ul>
+                        
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
