@@ -201,11 +201,10 @@ router.post("/addRecipe", async function (req, res) {
         if (!aRole) {
             return res.status(400).send("Invalid user"); // stop here if not found
         }
-        const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        const {title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
         const instructionsSpilt = instructions.split(/,|\n/);
         const ingrdientsSpilt = req.body.ingredients.split(/\n|,/).map(item => splitWord(item.trim()));
         const newRecipe = new Recipe({
-            recipeId,
             userId: [aRole._id],
             title,
             chef,
@@ -286,25 +285,32 @@ router.post('/:id/delete', async (req, res) => {
 router.get('/:id/edit', async (req, res) => {
     try {
         const { userId, email, fullName, role } = req.query; // pass in query
+
+        const { home, navBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
+        
         const recipe = await Recipe.findById(req.params.id);
 
         console.log(recipe)
         if (!recipe) {
-            return res.status(404).send('recipe not found');
+            return res.status(404).send('recipe not found in edit id');
         }
-        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role});
+        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message:'', error: '', home,navBarColor, roleName});
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
     }
 });
 
+
 router.post("/:id/update", async function (req, res) {
+    const { userId, email, fullName, role } = req.body;
+    const { home, navBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
+    let recipe;
     try {
-        const recipe = await Recipe.findById(req.params.id);
+        recipe = await Recipe.findById(req.params.id);
         if (!recipe) return res.status(404).send('Recipe in update not found');
 
-        const aRole = await Role.findById(recipe.userId[0]);
+        const aRole = await Role.findById(recipe.userId);
         if (!aRole) return res.status(400).send("Invalid user error in update");
 
         const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
@@ -331,26 +337,30 @@ router.post("/:id/update", async function (req, res) {
         }
     );
 
-        await updateRecipe.save();
-        console.log(updateRecipe);
-
-        res.status(200).redirect(`/api/view-recipes-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}&&role=${req.body.role}`)
+     if (!updateRecipe) {
+         return res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: 'Update failed', home, navBarColor, roleName })
+     } 
+        return res.status(200).render('edit-recipe', { recipe: updateRecipe, userId, email, fullName, role, message: 'Update successful', error: '', home, navBarColor, roleName })
+     
+        
     } catch (error) {
         console.error(error);
 
+        let errorMessage = 'Sever Error';
         // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(err => err.message);
-            return res.status(400).send(`Validation Error: ${errors.join(', ')}`);
+            errorMessage =`Validation Error: ${errors.join(', ')}`;
         }
 
         // Handle duplicate key errors
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern)[0];
-            return res.status(400).send(`${field.charAt(0).toUpperCase() + field.slice(1)} already exists`);
+            errorMessage =`${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
         }
 
-        res.status(500).send('Server Error');
+        res.status(200).render('edit-recipe', { recipe, userId, email, fullName, role, message: '', error: errorMessage, home, navBarColor, roleName });
+        
     }
 });
 
@@ -507,7 +517,24 @@ router.get('/api/view-inventory-34890645', async function (req, res) {
         const { userId, email, fullName, role } = req.query; //  pass in query
         const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
         const inventories = await Inventory.find({});
-        res.status(200).render('view-inventory', { inventories, userId, email, fullName, role, home, navBarColor, roleName, invNav });
+
+        const totalValueAggregate = await Inventory.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalInventoryValue: { $sum: { $multiply: ["$quantity", "$cost"] } } //the sum is for adding up all of the ingredient refernce: https://www.mongodb.com/docs/manual/reference/operator/aggregation/sum/
+                    // multiply is for quantity * cost reference: https://www.mongodb.com/docs/manual/reference/operator/aggregation/multiply/
+                }
+            },
+        ]);
+
+        // Number convert in to a Js number
+        //|| 0 ensure that if the value os undefined it will set to 0
+        // totalValue now is a js number can use toFixed()
+        // [0] first and only element of the array, need the zero because aggregate always return an array
+        const totalValue = Number(totalValueAggregate[0]?.totalInventoryValue || 0);
+        console.log(totalValue)
+        res.status(200).render('view-inventory', { inventories, userId, email, fullName, role, home, navBarColor, roleName, invNav, totalValue });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -575,72 +602,84 @@ router.post("/addInventory", async function(req,res){
 router.get('/inventories/:id/edit', async (req, res) => {
     try {
         const { userId, email, fullName, role } = req.query; //pass in query
-        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+
+        const { home, navBarColor, roleName } = allRoleNavBar(role, userId, email, fullName);
+
         const inventory = await Inventory.findById(req.params.id);
 
+        console.log(inventory)
         if (!inventory) {
             return res.status(404).send('Inventory in edit not found');
         }
-        res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, invNav,roleName,navBarColor, home });
+        res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: '' });
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
     }
 });
-//needs to redo this
-// POST update inventory
+
 router.post("/inventories/:id/update", async function (req, res) {
+    const { userId, email, fullName, role } = req.body;
+    const { home, roleName, navBarColor } = allRoleNavBar(role, userId, email, fullName);
+    let inventory;
     try {
-        const inventory = await Inventory.findById(req.params.id).populate("userId");
+        inventory = await Inventory.findById(req.params.id)
         if (!inventory) return res.status(404).send('Inventory in update not found');
         
-        const aRole = await Role.findById(inventory.userId[0]);
+        const aRole = await Role.findById(inventory.userId);
         if (!aRole) return res.status(400).send("Invalid user error in update");
-
         const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, stock, createdDate } = req.body;
-        // Create new student instance
-        const updateInventory = await Inventory.findByIdAndUpdate(
-            req.params.id,
-            {
-            inventoryId,
-            userId: [aRole._id],
-            ingredientName,
-            quantity: parseFloat(quantity),
-            unit,
-            category,
-            purchaseDate,
-            expirationDate,
-            location,
-            cost: parseFloat(cost),
-            stock: parseInt(stock),
-            createdDate
-        },
-        {
-            new: true,              // Return the updated document
-            runValidators: true     // Run schema validation
-        }
-    );  
-        if (!updateInventory) {
-            return res.status(404).send('Inventory in update not found');
-        }
+        
+        const duplicateName = await Inventory.findOne({ingredientName: ingredientName})
 
-        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&email=${req.body.email}&&fullName=${req.body.fullName}&&role=${req.body.role}`);
+        if(duplicateName){
+            return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: 'IngredientName already exist' })
+        }
+                const updateInventory = await Inventory.findByIdAndUpdate(
+                    req.params.id,
+                    {
+                    inventoryId,
+                    userId: [aRole._id],
+                    ingredientName,
+                    quantity: parseFloat(quantity),
+                    unit,
+                    category,
+                    purchaseDate,
+                    expirationDate,
+                    location,
+                    cost: parseFloat(cost),
+                    stock: parseInt(stock),
+                    createdDate
+                },
+                {
+                    new: true,              // Return the updated document
+                    runValidators: true     // Run schema validation
+                }
+            );
+
+        if (!updateInventory) {
+            return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: 'Update Fail' })
+        }
+            return res.status(200).render("edit-inventory", { inventory: updateInventory, userId, email, fullName, role, roleName, navBarColor, home, message: 'Update Successfully', error: '' });
+
     } catch (error) {
+
         console.error(error);
 
+        let errorMessage = 'Sever Error';
         // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(err => err.message);
-            return res.status(400).send(`Validation Error: ${errors.join(', ')}`);
+            errorMessage = `Validation Error: ${errors.join(', ')}`;
         }
 
         // Handle duplicate key errors
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern)[0];
-            return res.status(400).send(`${field.charAt(0).toUpperCase() + field.slice(1)} already exists`);
+            errorMessage = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
         }
 
-        res.status(500).send('Server Error');
+        res.status(200).render("edit-inventory", { inventory, userId, email, fullName, role, roleName, navBarColor, home, message: '', error: errorMessage, home, navBarColor, roleName })
     }
 });
 
@@ -659,6 +698,42 @@ router.post('/inventories/:id/delete', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+
+
+///////////////////////////////
+//         REPORT           //
+//////////////////////////////
+router.get('/api/report-34890645', async function(req,res){
+    try {
+        const { userId, email, fullName, role } = req.query; //pass in query
+        const { home, navBarColor, roleName, invNav } = allRoleNavBar(role, userId, email, fullName);
+
+        // track the most View
+        const mostView = await Recipe.aggregate([
+            {$sort: {view: - 1}}, // Order the most view(-1) to least view
+            {$project: {title: 1, views: 1}} // the title is for display the name of the recipe and the views of that recipe
+        ]);
+
+        //track most created
+        const mostCreated = await Recipe.aggregate([
+            {
+                $group: {
+                    _id: '$userId', //group all recipes done by this ObjectId and store in _id
+                    totalRecipeMade: {$sum: 1}
+                }
+            },
+            {$sort: {totalRecipeMade: -1}},
+            {$project: {userId: '$_id', totalRecipeMade: 1, _id: 0 }}
+        ]);
+
+        res.status(200).render('report', { userId, email, fullName, role, home, navBarColor, roleName, invNav });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+})
+
+
 
 module.exports = router;
     

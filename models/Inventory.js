@@ -9,11 +9,12 @@ const inventorySchema = new mongoose.Schema({
         match: [/^I-\d{5}$/, 'Inventory Id must be I-XXXXX']
     },
     userId: [{ 
-            type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
-            ref: "Role" 
+        type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
+        ref: "Role" 
     }],
     ingredientName: {
         type: String,
+        unique: true,
         required: [true, 'ingredientName is required'],
         minlength: [2, 'ingredientName must be at least 2 characters'],
         maxlength: [50, 'ingredientName cannot exceed 50 characters'],
@@ -93,7 +94,7 @@ const inventorySchema = new mongoose.Schema({
 });
 
 // Cross-collection data analysis
-inventorySchema.index({ ingredientName: 1});
+//inventorySchema.index({ ingredientName: 1});
 
 const Inventory = mongoose.model('Inventory', inventorySchema);
 

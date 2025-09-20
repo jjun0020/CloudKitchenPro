@@ -108,6 +108,10 @@ const recipeSchema = new mongoose.Schema({
     createdDate: {
         type: Date,
         default: Date.now
+    },
+    views: {
+        type:Number,
+        default: 0
     }
 });
 

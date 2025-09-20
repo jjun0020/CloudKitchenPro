@@ -56,6 +56,11 @@
                 </ul>
             </div>
         <% }%>
+
+            <!-- Report for Admin only -->
+            <% if(roleName==='Admin' ){ %>
+                <a href="/api/report-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>" class="btn" style="background-color:rgb(89, 40, 135); color:white; font-weight: bold;">Report</a>
+            <% } %>
             
             <!-- Inventory every role have this -->
             <div class="dropdown">

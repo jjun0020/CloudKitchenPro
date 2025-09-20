@@ -96,14 +96,9 @@
 
             <div style="margin-top: 5px;">
             <div class="total my-4 text-center" style="background-color: #28a745; color: white; font-weight: bold;">     
-                    <% let total=0%>
-                    <% for (let i=0; i < inventories.length; i++){%>
-                    <% total +=parseFloat(inventories[i].cost)%>
-                    <%}%>
-                    <h2>Total Inventory Value:</h2>
-                        <p class = "text-center" style = "font-size: 20px;">$<%= total.toFixed(2) %></p>
-                            <%# ToFixed(2) only two decimal allow
-                            reference:https://www.w3schools.com/jsref/jsref_tofixed.asp%>
+                <h2>Total Inventory Value:</h2>
+                <p>$<%= totalValue.toFixed(2) %></p>
+                <%#reference:https://www.w3schools.com/jsref/jsref_tofixed.asp%>
             </div>
             </div>
 

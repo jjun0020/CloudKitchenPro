@@ -44,9 +44,7 @@
                     Recipe</a>
             </div>
         <% } %>
-        <% if(message) { %>
-            <p style = "color: red;"><%= message %></p>
-        <% } %>
+
 
        <% if(recipe) { %>
                 <div class="table-responsive">
@@ -135,6 +133,12 @@
                         </tbody>
                     </table>
                 </div>
+
                 <% } %>
+                <% if(message) { %>
+                    <p class="text-center" style="color: red; font-weight: bold;">
+                        <%= message %>
+                    </p>
+                    <% } %>
 </body>
 <%- include('partials/footer') %>
