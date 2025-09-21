@@ -4,4 +4,113 @@
 
 <%- include('partials/shared', { home, navigationBarColor, userId, email, fullName, role, titleColor}) %>
 
+
+<!-- ============================================ -->
+<!--            Cost Analysis Dashboard           -->
+<!-- ============================================ -->
+<div class="container mt-4">
+    <h1 class="text-center ">Smart Inventory</h1>
+    <h2>💲📊Cost Analysis</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Year</th>
+                    <th>Month</th>
+                    <th>Category</th>
+                    <th>Total category count</th>
+                    <th>Total Cost per each category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% costAnalysis.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.year%>
+                        </td>
+                        <td>
+                            <%= item.month%>
+                        </td>
+                        <td>
+                            <%= item.category%>
+                        </td>
+                        <td>
+                            <%= item.count%>
+                        </td>
+                        <td>
+                            $<%= item.totalValue.toFixed(2)%>
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+    </div>
+    
+<!-- ============================================ -->
+<!--          Seasonal Inventory Insights         -->
+<!-- ============================================ -->
+    <h2>🍂📊Seasonal Inventory Insights</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table">
+                <tr>
+                    <th style="background-color: rgb(215, 142, 87);">Year</th>
+                    <th style="background-color: rgb(215, 142, 87);">Month</th>
+                    <th style="background-color: rgb(215, 142, 87);">Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% seasonal.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.year%>
+                        </td>
+                        <td>
+                            <%= item.month%>
+                        </td>
+                        <td>
+                            <%= item.category%>
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+    </div>
+
+<!-- ============================================ -->
+<!--            Price Trend Analysis              -->
+<!-- ============================================ -->
+    <h2>💲📊Price Trend Analysis</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table">
+                <tr>
+                    <th style="background-color: rgb(104, 215, 87);">Year</th>
+                    <th style="background-color: rgb(104, 215, 87);">Month</th>
+                    <th style="background-color: rgb(104, 215, 87);">Category</th>
+                    <th style="background-color: rgb(104, 215, 87);">Average price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% priceTrend.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <%= item.year%>
+                        </td>
+                        <td>
+                            <%= item.month%>
+                        </td>
+                        <td>
+                            <%= item.category%>
+                        </td>
+                        <td>
+                            $<%= item.averagePrice.toFixed(2) %>
+                        </td>
+                    </tr>
+                    <%})%>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <%- include('partials/footer') %>

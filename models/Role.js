@@ -4,9 +4,7 @@ const mongoose = require('mongoose');
 const roleSchema = new mongoose.Schema({
     userId: {
         type: String,
-        default: generateUserId,
         unique: true,
-        required: true,
     },
     email: {
         type: String,
@@ -48,14 +46,23 @@ const roleSchema = new mongoose.Schema({
     timestamps: true // Adds createdAt and updatedAt fields automatically
 });
 
+roleSchema.pre('save', async function (next) {
+    if (this.isNew) { // this ensure only when creating a new inventory item
+
+        const lastRole = await mongoose.model('Role').findOne({})
+            .sort({ userId: -1 }) //sort the order
+            .exec();
+
+        let newId = 1; // this is for when there are no inventory
+        if (lastRole && lastRole.userId) {
+            const lastNumber = parseInt(lastRole.userId.split('-')[1]);
+            newId = lastNumber + 1;
+        }
+        this.userId = "U-" + newId.toString().padStart(5, '0');
+    }
+    next();
+});
 
 const Role = mongoose.model('Role', roleSchema);
 
 module.exports = Role;
-
-let id = 0;
-function generateUserId() {
-    id++
-    let recipeId = id.toString().padStart(5, "0");
-    return "U-" + recipeId;
-};

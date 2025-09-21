@@ -58,7 +58,7 @@
     <h2 class="text-center" style="background-color: rgba(52, 52, 220, 0.837); color: white; padding: 10px;">📖My Recipes</h2>
     <div class="d-flex gap-2 justify-content-center gap-4 my-4">
             <% if (chefOwnRecipe.length === 0) { %>
-                <p class="text-center" style="color: red; background-color: rgb(233, 141, 141); padding: 5px;">No added recipe <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>">Add
+                <p class="text-center" style="color: red; font-size: 20px; padding: 5px;">No added recipe <a href="/api/add-recipes-34890645?email=<%=email%>&&fullName=<%=fullName%>&&userId=<%=userId%>&&role=<%=role%>">Add
                     first recipe here</a></p>
 
             <%} else { %>
@@ -81,7 +81,7 @@
     <h2 class="text-center" style="background-color: rgba(109, 234, 115, 0.837); color: white; padding: 10px;">Current Inventory</h2>
     <div class="d-flex gap-2 justify-content-center gap-4 my-4">
                 <% if (sharedInventory.length === 0){ %>
-                    <p class="text-center" style="color: red; background-color: rgb(233, 141, 141); padding: 5px;">No added ingrdient <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>">Add the
+                    <p class="text-center" style="color: red; font-size: 20px; padding: 5px;">No added ingrdient <a href="/api/add-inventories-34890645?userId=<%= userId %>&&email=<%=email%>&&fullName=<%=fullName%>&&role=<%=role%>">Add the
                     first ingredient here</a></p>
                 <%} else { %>
                     <% sharedInventory.forEach(inventory => { %>

@@ -1,3 +1,5 @@
+// This is the sever page, where they handle all of the role,recipea and inventory get and post
+
 const express = require('express');
 const Role = require('../models/Role');
 const Recipe = require('../models/Recipe');
@@ -590,17 +592,19 @@ router.get("/api/add-inventories-34890645", function (req, res) {
 });
 
 // POST to create new inventory
-router.post("/addInventory", async function(req,res){
+router.post("/addInventory", async function (req, res) {
     try {
+        console.log(req.body.userId);
         let aRole = await Role.findOne({ userId: req.body.userId });
         console.log(aRole)
         if (!aRole) {
-            return res.status(400).send("Invalid user/role ID"); // stop here if not found
+            return res.status(400).send("Invalid user"); // stop here if not found
         }
-        const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost,stock, createdDate } = req.body;
 
+        const { ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, stock, createdDate } = req.body;
+       
         //validation
-        if(!ingredientName || !unit || !category || !purchaseDate || !expirationDate ||!location){
+        if (!ingredientName || !unit || !category || !purchaseDate || !expirationDate || !location) {
             return res.status(400).send("Missing some requirment for Inventory")
         }
 
@@ -618,10 +622,8 @@ router.post("/addInventory", async function(req,res){
         if (isNaN(stockNum) || stockNum < 0.01 || stockNum > 999.99) {
             return res.status(400).send("Stock must be between 0.01 and 999.99");
         }
-
-
+        
         const newInventory = new Inventory({
-            inventoryId,
             userId: [aRole._id], //make it a foreign key
             ingredientName,
             quantity: parseFloat(quantity),
@@ -636,7 +638,9 @@ router.post("/addInventory", async function(req,res){
         });
 
         await newInventory.save();
-        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}&&role=${req.body.role}`);
+        console.log(newInventory);
+
+        res.status(200).redirect(`/api/view-inventory-34890645?userId=${req.body.userId}&&fullName=${req.body.fullName}&&email=${req.body.email}&&role=${req.body.role}`)
     } catch (error) {
         console.error(error);
 
@@ -654,7 +658,8 @@ router.post("/addInventory", async function(req,res){
 
         res.status(500).send('Server Error');
     }
-})
+});
+
 
 //Task 9: Inventory Update/Edit Management
 // GET edit inventory form
@@ -709,15 +714,16 @@ router.post("/inventories/:id/update", async function (req, res) {
             return res.status(400).send("Stock must be between 0.01 and 999.99");
         }
 
-        
-        const duplicateName = await Inventory.findOne({ingredientName: ingredientName,
+        const duplicateName = await Inventory.findOne({
+            ingredientName: ingredientName,
             _id: { $ne: req.params.id } //ne mean not include, so when the user change something else 
-                //that is not the name, it will update successfully
+            //that is not the name, it will update successfully
         })
 
-        if(duplicateName){
+        if (duplicateName) {
             return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: '', error: 'IngredientName already exist' })
         }
+
                 const updateInventory = await Inventory.findByIdAndUpdate(
                     req.params.id,
                     {
@@ -948,13 +954,82 @@ router.get('/api/filter-recipe-34890645', async function(req,res){
 });
 
 // HD Task 4: Smart Inventory Management and Cost Optimization
-router.get('/api/smart-inventory-34890645', function(req,res){
+router.get('/api/smart-inventory-34890645', async function(req,res){
     const { userId, email, fullName, role } = req.query; //pass in query
     const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
     try{
-        //
+        
+        // 2.Cost Analysis Dashboard - track spending patterns by category and calculate total inventory value over time
+        const costAnalysis = await Inventory.aggregate([
+            {
+                $group: {
+                    _id: {
+                        category: '$category', // category
+                        year: { $year: '$purchaseDate' },  //reference: https://www.mongodb.com/docs/manual/reference/operator/aggregation/year/
+                        month: { $month: '$purchaseDate' },
+                    },
+                    count: {$sum: 1}, //count how many selected category are in the category
+                    totalInventoryValue: { $sum: { $multiply: ["$quantity", "$cost"] } } //the total cost
+                }
+            },{
+                $project: {
+                    _id: 0,
+                    category: '$_id.category',
+                    count: 1,
+                    totalValue: '$totalInventoryValue',
+                    year: '$_id.year',
+                    month: '$_id.month',
+                }
+            }, { $sort: { year: 1, month: 1} } 
+        ]);
 
-        res.status(200).render('smart-inventory' , { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor})
+        // 5.Seasonal Inventory Insights - analyze purchasing and usage patterns to identify seasonal trends
+        const seasonal = await Inventory.aggregate([
+            {
+                $group: {
+                    _id: {
+                        category: '$category',
+                        year: { $year: '$purchaseDate' },  
+                        month: { $month: '$purchaseDate' },                   
+                    },
+                    count: { $sum: 1 },
+                },
+            }, {
+                $project: {
+                    _id: 0, 
+                    category: '$_id.category',
+                    year: '$_id.year',
+                    month: '$_id.month',
+                }
+            }, {
+                $sort: { year: 1, month: 1 }
+            }
+        ]);
+
+        //Price Trend Analysis - monitor cost changes over time for different ingredient categories
+        const priceTrend = await Inventory.aggregate([
+            {
+                $group: {
+                    _id: {
+                        category: '$category',
+                        year: { $year: '$purchaseDate' }, 
+                        month: { $month: '$purchaseDate' }            
+                    },
+                    averagePrice: { $avg: '$cost'},
+                }
+            },{
+                $project: {
+                    _id: 0,
+                    category: '$_id.category',
+                    year: '$_id.year',
+                    month: '$_id.month',
+                    averagePrice: 1,
+                }
+            }, { $sort: { year: 1, month: 1 } }
+        ]);
+        console.log(priceTrend);
+
+        res.status(200).render('smart-inventory', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor, costAnalysis, seasonal, priceTrend })
     }catch(error){
         console.error(error);
         res.status(500).send('Server Error');

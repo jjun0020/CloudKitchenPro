@@ -3,9 +3,7 @@ const mongoose = require('mongoose');
 const recipeSchema = new mongoose.Schema({
     recipeId: {
         type: String,
-        default: generateUserId,
         unique: true,
-        required: true,
         match: [/^R-\d{5}$/, 'Recipe Id must be R-XXXXX']
     },
     userId: [{ 
@@ -115,6 +113,24 @@ const recipeSchema = new mongoose.Schema({
     }
 });
 
+//This generates a unique inventory ID
+recipeSchema.pre('save', async function(next){
+    if(this.isNew){ // this ensure only when creating a new inventory item
+
+        const lastrecipe = await mongoose.model('Recipe').findOne({})
+        .sort({recipeId: -1}) //sort the order
+        .exec(); 
+
+        let newId = 1; // this is for when there are no inventory
+        if (lastrecipe && lastrecipe.recipeId){
+            const lastNumber = parseInt(lastrecipe.recipeId.split('-')[1]);
+            newId = lastNumber + 1;
+        }
+        this.recipeId = "R-" + newId.toString().padStart(5,'0');
+    }
+    next();
+});
+
 // Cross-collection data analysis
 //ingredients is an array of strings in the Recipe
 //The index will jump to ingrdients, without looking at the whole thing
@@ -125,9 +141,3 @@ const Recipe = mongoose.model('Recipe', recipeSchema);
 
 module.exports = Recipe;
 
-let id = 0;
-function generateUserId() {
-    id++
-    let recipeId = id.toString().padStart(5, "0");
-    return "R-" + recipeId;
-};

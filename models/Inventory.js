@@ -3,15 +3,13 @@ const mongoose = require('mongoose');
 const inventorySchema = new mongoose.Schema({
     inventoryId: {
         type: String,
-        default: generateUserId,
         unique: true,
-        required: true,
         match: [/^I-\d{5}$/, 'Inventory Id must be I-XXXXX']
     },
-    userId: { 
+    userId: [{ 
         type: mongoose.Schema.Types.ObjectId, //objectId is like a primary key
         ref: "Role" 
-    },
+    }],
     ingredientName: {
         type: String,
         required: [true, 'ingredientName is required'],
@@ -92,16 +90,28 @@ const inventorySchema = new mongoose.Schema({
     }
 });
 
+//This generates a unique inventory ID
+inventorySchema.pre('save', async function(next){
+    if(this.isNew){ // this ensure only when creating a new inventory item
+
+        const lastIngredient = await mongoose.model('Inventory').findOne({})
+        .sort({inventoryId: -1}) //sort the order
+        .exec(); 
+
+        let newId = 1; // this is for when there are no inventory
+        if(lastIngredient && lastIngredient.inventoryId){
+            const lastNumber = parseInt(lastIngredient.inventoryId.split('-')[1]);
+            newId = lastNumber + 1;
+        }
+        this.inventoryId = "I-" + newId.toString().padStart(5,'0');
+    }
+    next();
+});
+
 // Cross-collection data analysis
-inventorySchema.index({ ingredientName: 1}, {unique: true});
+inventorySchema.index({ ingredientName: 1});
 
 const Inventory = mongoose.model('Inventory', inventorySchema);
 
 module.exports = Inventory;
 
-let id = 0;
-function generateUserId() {
-    id++
-    let recipeId = id.toString().padStart(5, "0");
-    return "I-" + recipeId;
-};
