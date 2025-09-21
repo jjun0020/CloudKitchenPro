@@ -4,53 +4,7 @@ const Recipe = require('../models/Recipe');
 const Inventory = require('../models/Inventory');
 const router = express.Router();
 
-
-///////////////////////////////
-//          ROLE            //
-//////////////////////////////
-
-router.get('/api/admin-page-34890645', async function(req,res){
-    const countUser = await Role.countDocuments();  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
-    const countRecipe = await Recipe.countDocuments({});
-    const countInventory = await Inventory.countDocuments({});
-    const { userId, email, fullName, role } = req.query; // pass in query
-    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
-    console.log("Email:", email);
-    console.log("FullName:", fullName);
-    console.log("UserId", userId);
-    res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navigationBarColor, roleName, titleColor });
-});
-
-// This is displaying the chef page, in the here section will diplay their email and fullName
-// and their created recipe, diaplay ingredient
-router.get('/api/chef-page-34890645',async function (req, res) {
-    const countChef = await Role.countDocuments({ role: "Chef" });  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
-    const countRecipe = await Recipe.countDocuments({});
-    const countInventory = await Inventory.countDocuments({});
-    const { userId, email, fullName, role } = req.query; // pass in query
-    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
-    let aRole = await Role.findOne({userId});
-    if (!aRole){
-        return res.status(400).send("Invalid user for the chef page");
-    }
-    console.log("aRole", aRole)
-    const chefOwnRecipe = await Recipe.find({userId: aRole._id}); //this is the objectId of the current chef
-    console.log("chefOwnRecipe",chefOwnRecipe)
-    const sharedInventory = await Inventory.find({})
-    console.log("sharedInventory",sharedInventory)
-    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navigationBarColor, roleName, role, titleColor, chefOwnRecipe, sharedInventory });
-});
-
-router.get('/api/manager-page-34890645',async function (req, res) {
-    const countManger = await Role.countDocuments({role: "Manager"})
-    const countInventory = await Inventory.countDocuments({});
-    const { userId, email, fullName, role} = req.query; //  pass in query
-    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
-    res.status(200).render('manager-home', {
-        email, fullName, userId, countManger, countInventory, role, home, navigationBarColor, roleName, titleColor })
-});
-
-//This is to show the registration form add-role.ejs
+//Task 2: User Registration and Signup System
 router.get('/api/add-role-34890645', function (req, res) {
     res.status(200).render('add-role', {error: ''});
 });
@@ -149,39 +103,58 @@ router.post('/loginUser', async function(req,res){
 
 
 ///////////////////////////////
+//          ROLE            //
+//////////////////////////////
+
+//Task 4: Enhanced Application Homepage with Database Stats
+router.get('/api/admin-page-34890645', async function (req, res) {
+    const countUser = await Role.countDocuments();  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
+    const countRecipe = await Recipe.countDocuments({});
+    const countInventory = await Inventory.countDocuments({});
+    const { userId, email, fullName, role } = req.query; // pass in query
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+    console.log("Email:", email);
+    console.log("FullName:", fullName);
+    console.log("UserId", userId);
+    res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navigationBarColor, roleName, titleColor });
+});
+
+// This is displaying the chef page, in the here section will diplay their email and fullName
+// and their created recipe, diaplay ingredient
+router.get('/api/chef-page-34890645', async function (req, res) {
+    const countChef = await Role.countDocuments({ role: "Chef" });  //countDocuments is for counting the total in the database reference: https://www.geeksforgeeks.org/mongodb/mongoose-countdocuments-function/
+    const countRecipe = await Recipe.countDocuments({});
+    const countInventory = await Inventory.countDocuments({});
+    const { userId, email, fullName, role } = req.query; // pass in query
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+    let aRole = await Role.findOne({ userId });
+    if (!aRole) {
+        return res.status(400).send("Invalid user for the chef page");
+    }
+    console.log("aRole", aRole)
+    const chefOwnRecipe = await Recipe.find({ userId: aRole._id }); //this is the objectId of the current chef
+    console.log("chefOwnRecipe", chefOwnRecipe)
+    const sharedInventory = await Inventory.find({})
+    console.log("sharedInventory", sharedInventory)
+    res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navigationBarColor, roleName, role, titleColor, chefOwnRecipe, sharedInventory });
+});
+
+router.get('/api/manager-page-34890645', async function (req, res) {
+    const countManger = await Role.countDocuments({ role: "Manager" })
+    const countInventory = await Inventory.countDocuments({});
+    const { userId, email, fullName, role } = req.query; //  pass in query
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+    res.status(200).render('manager-home', {
+        email, fullName, userId, countManger, countInventory, role, home, navigationBarColor, roleName, titleColor
+    })
+});
+
+
+///////////////////////////////
 //         RECIPE           //
 //////////////////////////////
 
-
-router.get('/api/view-recipes-34890645', async function (req, res) {
-    try {
-        const { userId, email, fullName, role } = req.query; // pass in query
-        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
-        console.log("userIdForViewRecipe", userId);
-        console.log("emailForViewRecipe", email);
-        console.log("fullNameForViewRecipe", fullName);
-
-        //This is for the chef own recipe
-        let aRole = await Role.findOne({ userId });
-        if (!aRole) {
-            return res.status(400).send("Invalid user for the chef page");
-        }
-        console.log("aRole", aRole)
-        const chefOwnRecipe = await Recipe.find({ userId: aRole._id }); //this is the objectId of the current chef
-        console.log("chefOwnRecipe", chefOwnRecipe)
-
-        //This will other other chef recipe, except their own
-        const otherRecipes = await Recipe.find({
-            userId: { $ne: aRole._id }  //ne is for not equal reference: https://www.mongodb.com/docs/manual/reference/operator/query/ne/
-        }).populate('userId') // populate tells to recplace the ObjectId in userId with all of the data
-
-        res.render('view-recipes', { otherRecipes, userId, email, role, fullName, home, navigationBarColor, roleName, titleColor, chefOwnRecipe });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-});
-
+//Task 5: Database - Integrated Recipe Creation
 //GET to the recipe page
 router.get("/api/add-recipes-34890645", function(req, res) {
     const { userId, email, fullName, role } = req.query; // pass in query
@@ -200,7 +173,24 @@ router.post("/addRecipe", async function (req, res) {
         if (!aRole) {
             return res.status(400).send("Invalid user"); // stop here if not found
         }
+
         const {title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+        
+        //validation 
+        if (!title || !chef || !instructions || !mealType || !cuisineType || !prepTime || !difficulty){
+            return res.status(400).send("Missing some of the requirement")
+        }
+
+        const prepTimeNum = Number(prepTime);
+        if(isNaN(prepTimeNum)|| prepTime < 1 || prepTime > 480){
+            return res.status(400).send("Prep time must be between 1 and 480")
+        }
+
+        const servingsNum = Number(servings);
+        if (isNaN(servingsNum)|| servings < 1 || servings > 20) {
+            return res.status(400).send("Servings must be between 1 and 20")
+        }
+
         const instructionsSpilt = instructions.split(/,|\n/);
         const ingrdientsSpilt = req.body.ingredients.split(/\n|,/).map(item => splitWord(item.trim()));
         const newRecipe = new Recipe({
@@ -240,6 +230,37 @@ router.post("/addRecipe", async function (req, res) {
     }
 });
 
+//Task 6: MongoDB-Powered Recipe Display System 
+router.get('/api/view-recipes-34890645', async function (req, res) {
+    try {
+        const { userId, email, fullName, role } = req.query; // pass in query
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+        console.log("userIdForViewRecipe", userId);
+        console.log("emailForViewRecipe", email);
+        console.log("fullNameForViewRecipe", fullName);
+
+        //This is for the chef own recipe
+        let aRole = await Role.findOne({ userId });
+        if (!aRole) {
+            return res.status(400).send("Invalid user for the chef page");
+        }
+        console.log("aRole", aRole)
+        const chefOwnRecipe = await Recipe.find({ userId: aRole._id }); //this is the objectId of the current chef
+        console.log("chefOwnRecipe", chefOwnRecipe)
+
+        //This will other other chef recipe, except their own
+        const otherRecipes = await Recipe.find({
+            userId: { $ne: aRole._id }  //ne is for not equal reference: https://www.mongodb.com/docs/manual/reference/operator/query/ne/
+        }).populate('userId') // populate tells to recplace the ObjectId in userId with all of the data
+
+        res.render('view-recipes', { otherRecipes, userId, email, role, fullName, home, navigationBarColor, roleName, titleColor, chefOwnRecipe });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+//Task 7: Database-Integrated Recipe Deletion
 router.get('/api/delete-recipes-34890645', async function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; // pass in query
@@ -280,6 +301,7 @@ router.post('/:id/delete', async (req, res) => {
     }
 });
 
+//Task 9: Recipe Update / Edit Management
 //GET edit recipe
 router.get('/:id/edit', async (req, res) => {
     try {
@@ -313,6 +335,22 @@ router.post("/:id/update", async function (req, res) {
         if (!aRole) return res.status(400).send("Invalid user error in update");
 
         const { recipeId, title, chef, instructions, mealType, cuisineType, prepTime, difficulty, servings, createdDate } = req.body;
+
+        //validation 
+        if (!title || !chef || !instructions || !mealType || !cuisineType || !prepTime || !difficulty) {
+            return res.status(400).send("Missing some of the requirement")
+        }
+
+        const prepTimeNum = Number(prepTime);
+        if (isNaN(prepTimeNum) || prepTimeNum < 1 || prepTimeNum > 480) {
+            return res.status(400).send("Prep time must be between 1 and 480")
+        }
+
+        const servingsNum = Number(servings);
+        if (isNaN(servingsNum) || servingsNum < 1 || servingsNum > 20) {
+            return res.status(400).send("Servings must be between 1 and 20")
+        }
+        
         const instructionsSpilt = instructions.split(/,|\n/);
         const ingrdientsSpilt = req.body.ingredients.split(/\n|,/).map(item => splitWord(item.trim()));
         const updateRecipe = await Recipe.findByIdAndUpdate(
@@ -471,7 +509,7 @@ router.post('/updateRecipeByid',async function (req, res) {
     }
 });
 
-//HD Task 1
+//HD Task 1: Advanced MongoDB Queries and Aggregation
 //recipe integration 
 router.get('/api/recipe-integration-34890645', async function(req,res){
     try{
@@ -509,6 +547,7 @@ router.get('/api/recipe-integration-34890645', async function(req,res){
 //         INVENTORY         //
 //////////////////////////////
 
+//Task 8: MongoDB Inventory Item Management
 router.get('/api/view-inventory-34890645', async function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; //  pass in query
@@ -550,7 +589,7 @@ router.get("/api/add-inventories-34890645", function (req, res) {
     }
 });
 
-// POST create new inventory
+// POST to create new inventory
 router.post("/addInventory", async function(req,res){
     try {
         let aRole = await Role.findOne({ userId: req.body.userId });
@@ -559,6 +598,28 @@ router.post("/addInventory", async function(req,res){
             return res.status(400).send("Invalid user/role ID"); // stop here if not found
         }
         const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost,stock, createdDate } = req.body;
+
+        //validation
+        if(!ingredientName || !unit || !category || !purchaseDate || !expirationDate ||!location){
+            return res.status(400).send("Missing some requirment for Inventory")
+        }
+
+        const quantityNum = Number(quantity);
+        if (isNaN(quantityNum) || quantityNum < 0.001 || quantityNum > 9999) {
+            return res.status(400).send("Quantity must be between 0.001 and 9999");
+        }
+
+        const costNum = Number(cost);
+        if (isNaN(costNum) || costNum < 0.01 || costNum > 999.99) {
+            return res.status(400).send("Cost must be between 0.01 and 999.99");
+        }
+
+        const stockNum = Number(stock);
+        if (isNaN(stockNum) || stockNum < 0.01 || stockNum > 999.99) {
+            return res.status(400).send("Stock must be between 0.01 and 999.99");
+        }
+
+
         const newInventory = new Inventory({
             inventoryId,
             userId: [aRole._id], //make it a foreign key
@@ -570,7 +631,7 @@ router.post("/addInventory", async function(req,res){
             expirationDate,
             location,
             cost: parseFloat(cost),
-            stock: parseInt(stock),
+            stock: parseFloat(stock),
             createdDate
         });
 
@@ -595,6 +656,7 @@ router.post("/addInventory", async function(req,res){
     }
 })
 
+//Task 9: Inventory Update/Edit Management
 // GET edit inventory form
 router.get('/inventories/:id/edit', async (req, res) => {
     try {
@@ -627,7 +689,31 @@ router.post("/inventories/:id/update", async function (req, res) {
         if (!aRole) return res.status(400).send("Invalid user error in update");
         const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, stock, createdDate } = req.body;
         
-        const duplicateName = await Inventory.findOne({ingredientName: ingredientName})
+        //validation
+        if (!ingredientName || !unit || !category || !purchaseDate || !expirationDate || !location) {
+            return res.status(400).send("Missing some requirment for Inventory")
+        }
+
+        const quantityNum = Number(quantity);
+        if (isNaN(quantityNum) || quantityNum < 0.001 || quantityNum > 9999) {
+            return res.status(400).send("Quantity must be between 0.001 and 9999");
+        }
+
+        const costNum = Number(cost);
+        if (isNaN(costNum) || costNum < 0.01 || costNum > 999.99) {
+            return res.status(400).send("Cost must be between 0.01 and 999.99");
+        }
+
+        const stockNum = Number(stock);
+        if (isNaN(stockNum) || stockNum < 0.01 || stockNum > 999.99) {
+            return res.status(400).send("Stock must be between 0.01 and 999.99");
+        }
+
+        
+        const duplicateName = await Inventory.findOne({ingredientName: ingredientName,
+            _id: { $ne: req.params.id } //ne mean not include, so when the user change something else 
+                //that is not the name, it will update successfully
+        })
 
         if(duplicateName){
             return res.status(200).render('edit-inventory', { inventory, userId, email, fullName, role, roleName, navigationBarColor, home, message: '', error: 'IngredientName already exist' })
@@ -645,7 +731,7 @@ router.post("/inventories/:id/update", async function (req, res) {
                     expirationDate,
                     location,
                     cost: parseFloat(cost),
-                    stock: parseInt(stock),
+                    stock: parseFloat(stock),
                     createdDate
                 },
                 {
@@ -697,14 +783,42 @@ router.post('/inventories/:id/delete', async (req, res) => {
 });
 
 
-///////////////////////////////
-//         REPORT           //
-//////////////////////////////
-//HD Task 3
+//////////////////////////////////
+//         REPORT / HD          //
+//////////////////////////////////
+
+//HD Task 3: : Advanced Recipe Analytics and Reporting System
 router.get('/api/report-34890645', async function(req,res){
     try {
         const { userId, email, fullName, role } = req.query; //pass in query
         const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+
+        //1.Recipe Performance Analytics - most created using aggregation pipelines
+        const totalRecipe = await Recipe.aggregate([
+            {
+                $group: {
+                    _id: "$userId",
+                    totalRecipes: { $sum: 1 }
+                }
+            }, {
+                $lookup: {
+                    from: 'roles', // look up from role
+                    localField: '_id', // this will be from the group
+                    foreignField: '_id', // this _id matach from the role
+                    as: 'chef' // an array where both of _id match togetheer
+                }
+            }, {
+                $unwind: '$chef' // since lookup produces an array, unwind flattens into a single object, get rid of the array
+            }, {
+                $project: {
+                    chefName: "$chef.fullName", // pull the fullName from the roles
+                    totalRecipes: 1, // keeps the count
+                    _id: 0  //removes the default _id from the ouput
+                }
+            },
+            { $sort: { totalRecipes: -1 } } // this will display from the highest
+
+        ]);
 
         //2. Ingredient Usage Analysis - aggregate across all recipes to identify most commonly used ingredients and cost analysis
         const mostUseIngredient = await Recipe.aggregate([
@@ -731,33 +845,6 @@ router.get('/api/report-34890645', async function(req,res){
                     _id: 0
                 }
             },{$sort: {count: -1}}
-        ]);
-
-        //1.Recipe Performance Analytics - most created using aggregation pipelines
-        const totalRecipe = await Recipe.aggregate([
-            {
-                $group: {
-                    _id: "$userId", 
-                    totalRecipes: { $sum: 1 }
-                }
-            },{
-                $lookup: {
-                    from: 'roles', // look up from role
-                    localField: '_id', // this will be from the group
-                    foreignField: '_id', // this _id matach from the role
-                    as: 'chef' // an array where both of _id match togetheer
-                }
-            },{
-                $unwind: '$chef' // since lookup produces an array, unwind flattens into a single object, get rid of the array
-            },{
-                $project: {
-                    chefName: "$chef.fullName", // pull the fullName from the roles
-                    totalRecipes: 1, // keeps the count
-                    _id: 0  //removes the default _id from the ouput
-                }
-            },
-            {$sort: {totalRecipes: -1 }} // this will display from the highest
-
         ]);
 
         // 3. User Recipe Insights - generate reports showing recipe creation patterns by chef, difficulty distribution, cuisine preferences
@@ -837,6 +924,8 @@ router.get('/api/filter-recipe-34890645', async function(req,res){
     const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
     try {
         const {cuisineType, difficulty, prepTime} = req.query;
+
+        // put the attribute inside match
         const match = {};
         if(cuisineType){
             match.cuisineType = cuisineType
@@ -849,10 +938,24 @@ router.get('/api/filter-recipe-34890645', async function(req,res){
         }
 
         const filterRecipe = await Recipe.aggregate([
-            {$match: match}
+            {$match: match} // recipe that match that attribute
         ])
         res.status(200).render('filter-recipe', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor, filterRecipe,cuisineType,difficulty,prepTime});
     } catch(error){
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+// HD Task 4: Smart Inventory Management and Cost Optimization
+router.get('/api/smart-inventory-34890645', function(req,res){
+    const { userId, email, fullName, role } = req.query; //pass in query
+    const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+    try{
+        //
+
+        res.status(200).render('smart-inventory' , { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor})
+    }catch(error){
         console.error(error);
         res.status(500).send('Server Error');
     }

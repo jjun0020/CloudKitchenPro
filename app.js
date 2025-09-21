@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { connectToMongoDB } = require('./db/connection');
-const roleRoutes = require('./routes/roles');
+const roleRoutes = require('./routes/sever');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
