@@ -144,7 +144,13 @@
                 <a href="" class="btn btn-secondary">Cancel</a>
             </div>
 
+            <% if (error) { %>
+                <div style="color: red; font-size: 20px;">
+                    <%= error %>
+                </div>
+            <% } %>
         </form>
+
     </div>
 
 

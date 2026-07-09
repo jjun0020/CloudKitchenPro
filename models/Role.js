@@ -1,3 +1,4 @@
+//Role Schema
 //Task 2: User Registration and Signup System
 const mongoose = require('mongoose');
 
@@ -41,6 +42,10 @@ const roleSchema = new mongoose.Schema({
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be at least 8 characters'],
         match: [/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 'Please Enter a valid password']
+    },
+    isLoggedIn: {
+        type: Boolean,
+        default: false,
     }
 }, {
     timestamps: true // Adds createdAt and updatedAt fields automatically

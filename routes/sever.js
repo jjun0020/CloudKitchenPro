@@ -1,4 +1,5 @@
 // This is the sever page, where they handle all of the role,recipea and inventory get and post
+//Done by Jinda Katherine Jungsukhum - 34890645
 
 const express = require('express');
 const Role = require('../models/Role');
@@ -86,6 +87,9 @@ router.post('/loginUser', async function(req,res){
             
         }
 
+        user.isLoggedIn = true;
+        await user.save();
+
         if(user.role === 'Admin'){
             return res.status(200).redirect(`/api/admin-page-34890645?email=${encodeURIComponent(user.email)}&fullName=${encodeURIComponent(user.fullName)}&&userId=${encodeURIComponent(user.userId)}&&role=${encodeURIComponent(user.role)}`); //this make sure the email is pass through
         } else if (user.role === 'Chef'){
@@ -103,6 +107,23 @@ router.post('/loginUser', async function(req,res){
     }
 });
 
+//logout
+router.post('/logout', async function (req, res) {
+    try {
+        const { email } = req.body;  // hidden input in logout form
+
+        let user = await Role.findOne({ email });
+        if (user) {
+            user.isLoggedIn = false;
+            await user.save();
+        }
+
+        res.redirect('/api/login-34890645'); // back to login page
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error logging out");
+    }
+});
 
 ///////////////////////////////
 //          ROLE            //
@@ -118,6 +139,12 @@ router.get('/api/admin-page-34890645', async function (req, res) {
     console.log("Email:", email);
     console.log("FullName:", fullName);
     console.log("UserId", userId);
+
+    const user = await Role.findOne({ email });
+    if (!user || !user.isLoggedIn) {
+        return res.redirect('/api/login-34890645');
+    }
+
     res.status(200).render('admin-home', { email, fullName, userId, role, countUser, countRecipe, countInventory, home, navigationBarColor, roleName, titleColor });
 });
 
@@ -138,6 +165,12 @@ router.get('/api/chef-page-34890645', async function (req, res) {
     console.log("chefOwnRecipe", chefOwnRecipe)
     const sharedInventory = await Inventory.find({})
     console.log("sharedInventory", sharedInventory)
+
+    const user = await Role.findOne({ email });
+    if (!user || !user.isLoggedIn) {
+        return res.redirect('/api/login-34890645');
+    }
+
     res.status(200).render('chef-home', { email, fullName, userId, countChef, countRecipe, countInventory, home, navigationBarColor, roleName, role, titleColor, chefOwnRecipe, sharedInventory });
 });
 
@@ -146,17 +179,26 @@ router.get('/api/manager-page-34890645', async function (req, res) {
     const countInventory = await Inventory.countDocuments({});
     const { userId, email, fullName, role } = req.query; //  pass in query
     const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+
+    const user = await Role.findOne({ email });
+    if (!user || !user.isLoggedIn) {
+        return res.redirect('/api/login-34890645');
+    }
+
     res.status(200).render('manager-home', {
         email, fullName, userId, countManger, countInventory, role, home, navigationBarColor, roleName, titleColor
     })
 });
 
+//async is declares a function that return a promise
+//await is wait until the promise is resolves
+//promise is likie pending fulfilled and rejected
 
 ///////////////////////////////
 //         RECIPE           //
 //////////////////////////////
 
-//Task 5: Database - Integrated Recipe Creation
+//Task 5: Database - Integrated Recipe Creation   
 //GET to the recipe page
 router.get("/api/add-recipes-34890645", function(req, res) {
     const { userId, email, fullName, role } = req.query; // pass in query
@@ -584,7 +626,7 @@ router.get("/api/add-inventories-34890645", function (req, res) {
     try {
         const { userId, email, fullName, role } = req.query; //pass in query
         const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
-        res.status(200).render('add-inventory', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor });
+        res.status(200).render('add-inventory', { userId, email, fullName, role, home, navigationBarColor, roleName, titleColor, error: '' });
     } catch(error){
         console.error(error);
         res.status(500).send('Server Error');
@@ -594,6 +636,9 @@ router.get("/api/add-inventories-34890645", function (req, res) {
 // POST to create new inventory
 router.post("/addInventory", async function (req, res) {
     try {
+        const { userId, email, fullName, role } = req.body; //pass in query
+        const { home, navigationBarColor, roleName, titleColor } = allRoleNavBar(role, userId, email, fullName);
+    
         console.log(req.body.userId);
         let aRole = await Role.findOne({ userId: req.body.userId });
         console.log(aRole)
@@ -622,7 +667,8 @@ router.post("/addInventory", async function (req, res) {
         if (isNaN(stockNum) || stockNum < 0.01 || stockNum > 999.99) {
             return res.status(400).send("Stock must be between 0.01 and 999.99");
         }
-        
+
+
         const newInventory = new Inventory({
             userId: [aRole._id], //make it a foreign key
             ingredientName,
@@ -636,6 +682,26 @@ router.post("/addInventory", async function (req, res) {
             stock: parseFloat(stock),
             createdDate
         });
+
+        const duplicateName = await Inventory.findOne({
+            ingredientName: ingredientName
+        });
+
+        if (duplicateName) {
+            return res.status(200).render('add-inventory', {
+                userId: aRole.userId,
+                email: aRole.email,
+                fullName: aRole.fullName,
+                role: aRole.role,
+                message: '',
+                error: 'IngredientName already exists',
+                home,
+                navigationBarColor,
+                roleName,
+                titleColor
+            });
+
+        }
 
         await newInventory.save();
         console.log(newInventory);
@@ -690,7 +756,7 @@ router.post("/inventories/:id/update", async function (req, res) {
         inventory = await Inventory.findById(req.params.id)
         if (!inventory) return res.status(404).send('Inventory in update not found');
         
-        const aRole = await Role.findById(inventory.userId);
+        const aRole = await Role.findById(inventory.userId[0]);
         if (!aRole) return res.status(400).send("Invalid user error in update");
         const { inventoryId, ingredientName, quantity, unit, category, purchaseDate, expirationDate, location, cost, stock, createdDate } = req.body;
         
@@ -876,7 +942,7 @@ router.get('/api/report-34890645', async function(req,res){
             {
                 $group: {
                     _id: '$cuisineType', //MongoDB stores it in _id
-                    count: {$sum: 1},
+                    count: {$sum: 1}, //count the document in each group, add one for each document, so all sum up togethere
                     recipes: { $push: '$title' } 
                 }
             },{

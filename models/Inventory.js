@@ -1,3 +1,5 @@
+//Inventory Schema
+
 const mongoose = require('mongoose');
 
 const inventorySchema = new mongoose.Schema({
@@ -12,6 +14,7 @@ const inventorySchema = new mongoose.Schema({
     }],
     ingredientName: {
         type: String,
+        unique: true,
         required: [true, 'ingredientName is required'],
         minlength: [2, 'ingredientName must be at least 2 characters'],
         maxlength: [50, 'ingredientName cannot exceed 50 characters'],

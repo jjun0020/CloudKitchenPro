@@ -112,7 +112,10 @@
             </div>
 
             <!-- Logout every role have this -->
-            <a href="/api/login-34890645" class="btn" style="background-color:rgb(234, 40, 40); color:white;">Logout</a>
+            <form action="/logout" method="POST">
+                <input type="hidden" name="email" value="<%= email %>">
+                <button type="submit" class="btn" style="background-color:rgb(234, 40, 40); color:white;" >Logout</button>
+            </form>
         </div>
     </div>
 </nav>
