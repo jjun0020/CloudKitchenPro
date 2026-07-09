@@ -1,7 +1,7 @@
 //This is for connecting to the mongoDb mpass
 const mongoose = require('mongoose');
 
-const mongoURI = 'mongodb://localhost:27017/assignment_2';
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/assignment_2';
 
 async function connectToMongoDB() {
     try {
